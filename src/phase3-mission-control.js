@@ -19,6 +19,14 @@ function render(){
   const schedule=byId("missionScheduleSignal");
   const next=current.schedule.next;
   schedule.innerHTML=`<div class="mission-schedule-progress"><strong>${current.schedule.progress}%</strong><span>${current.schedule.completed}/${current.schedule.total} blocks complete</span></div><div class="mission-schedule-next"><small>NEXT BLOCK</small><strong>${esc(next?.title||"No remaining scheduled block")}</strong><span>${esc(next?.time||"Flexible")}${next?.detail?` · ${esc(next.detail)}`:""}</span></div>`;
+  byId("missionMomentumScore").textContent=`${current.momentum.value}`;
+  byId("missionMomentumLabel").textContent=current.momentum.label;
+  byId("missionForecastValue").textContent=`${current.forecast.projected}%`;
+  byId("missionForecastLabel").textContent=current.forecast.label;
+  const blockers=byId("missionBlockers");
+  blockers.innerHTML=current.blockers.length?current.blockers.map(item=>`<button class="mission-blocker ${item.level}" data-mission-view="${esc(item.view)}" type="button"><strong>${esc(item.title)}</strong><span>${esc(item.detail)}</span></button>`).join(""):'<div class="mission-clear"><strong>No critical blockers detected.</strong><span>Protect the plan and keep executing.</span></div>';
+  const plan=byId("missionCommandPlan");
+  plan.innerHTML=current.plan.map(item=>`<button class="mission-plan-step" data-mission-view="${esc(item.view)}" type="button"><span>${item.rank}</span><div><strong>${esc(item.title)}</strong><small>${esc(item.type)} · ${esc(item.reason)}</small></div></button>`).join("");
   global.AppState?.set?.("missionControl.brief",current,{source:"phase3-mission-control"});
   global.IronEvents?.emit?.("mission-control:rendered",current);
   return current;
@@ -33,6 +41,7 @@ function openAction(){
 function bind(){
   byId("missionControlExecute")?.addEventListener("click",openAction);
   byId("missionControlRefresh")?.addEventListener("click",render);
+  document.addEventListener("click",event=>{const target=event.target.closest("[data-mission-view]");if(target)document.querySelector(`[data-nav="${target.dataset.missionView}"]`)?.click()});
   document.addEventListener("change",event=>{
     if(event.target.matches('[data-toggle], [data-task-toggle], [data-time-toggle]'))setTimeout(render,0);
   });
@@ -44,5 +53,5 @@ function bind(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{bind();render()});
-global.IronMissionControlUI={version:"3.1.0",render,openAction};
+global.IronMissionControlUI={version:"3.2.0",render,openAction};
 })(window);

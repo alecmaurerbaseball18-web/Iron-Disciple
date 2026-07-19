@@ -1,0 +1,19 @@
+IRON DISCIPLE OS — PHASE 3.2 UPDATE PATCH
+
+Baseline required: Mission Control v3.1.0
+
+Upload everything inside this patch folder to the ROOT of the existing GitHub repository.
+GitHub will preserve the folder paths and replace only these six application files.
+
+Changed application files:
+- index.html
+- service-worker.js
+- assets/css/styles.css
+- src/modules/mission-control-v3.js
+- src/phase3-mission-control.js
+- tests/mission-control.test.js
+
+Suggested commit message:
+Add Mission Control execution forecast and blocker radar
+
+After deployment, press Ctrl+Shift+R once to refresh the service-worker cache.
