@@ -26,3 +26,9 @@
 - Added quarterly and monthly goal-pressure runway.
 - Added current schedule progress and next-block signal.
 - Published Mission Control output into the shared application state and event bus.
+
+## 5.2.0 — Decision Engine
+- Added centralized situation assessment and mission selection.
+- Added weighted priority ranking, explainable conflict resolution, and risk scoring.
+- Added executable action plans, timeline generation, daily missions, and weekly/monthly decision reviews.
+- Integrated `window.IronDecision` after the Human Performance Engine.

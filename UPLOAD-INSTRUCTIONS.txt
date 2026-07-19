@@ -1,29 +1,19 @@
-IRON DISCIPLE OS — PHASE 3.3 UPDATE PATCH
+IRON DISCIPLE OS — PHASE 5.2 DECISION ENGINE
 
-This ZIP contains only files changed after Phase 3.2.
-Do not delete or replace the rest of the repository.
+Upload every file in this patch using the same repository paths.
 
-UPLOAD STEPS
-1. Extract this ZIP.
-2. In GitHub, open the Iron-Disciple repository on the main branch.
-3. Click Add file > Upload files.
-4. Select everything INSIDE this extracted patch folder.
-5. Drag the selected files and folders into GitHub.
-6. Confirm the upload paths begin directly with:
-   assets/
-   src/
-   tests/
-   index.html
-   service-worker.js
-7. Commit directly to main with:
-   Add Mission Control daily closeout and tomorrow launch
-8. Wait for the GitHub Pages workflow to show a green check.
-9. Open the live app and press Ctrl + Shift + R once.
+ADD:
+- src/modules/decision-engine.js
+- tests/decision-engine.test.js
+- docs/DECISION-ENGINE.md
 
-FILES INCLUDED
+REPLACE:
 - index.html
+- 404.html
 - service-worker.js
-- assets/css/styles.css
-- src/modules/mission-control-v3.js
-- src/phase3-mission-control.js
-- tests/mission-control.test.js
+- docs/CHANGELOG.md
+
+No files should be deleted.
+
+Recommended commit message:
+Add Phase 5.2 Decision Engine
