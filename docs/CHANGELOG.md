@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.1.2 — Life Orchestrator Configuration System
+
+- Added validated, deeply immutable runtime configuration.
+- Added planner, scheduler, optimization, retry, diagnostics, logging, and persistence domains.
+- Added dotted-path reads and writes, deep-merge updates, path and full resets, and revision tracking.
+- Added configuration import/export envelopes and graceful browser-storage persistence.
+- Added configuration regression tests and runtime health validation.
+
 ## 6.1.1 — Life Orchestrator Bootstrap
 
 - Added the non-invasive `window.IronLife` orchestration bootstrap.

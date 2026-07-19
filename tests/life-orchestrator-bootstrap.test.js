@@ -6,8 +6,8 @@ const modulePath=path.resolve(__dirname,'../src/modules/life-orchestrator.js');
 delete require.cache[modulePath];
 const IronLife=require(modulePath);
 
-assert.strictEqual(IronLife.VERSION,'6.1.1');
-assert.strictEqual(IronLife.BUILD,'life-orchestrator-bootstrap');
+assert.strictEqual(IronLife.VERSION,'6.1.2');
+assert.strictEqual(IronLife.BUILD,'life-orchestrator-configuration');
 assert(Object.isFrozen(IronLife),'public API must be immutable');
 assert(Object.isFrozen(IronLife.metadata),'metadata must be immutable');
 assert(Object.isFrozen(IronLife.defaultConfig),'default configuration must be immutable');
@@ -38,7 +38,7 @@ assert(['healthy','degraded','unhealthy'].includes(health.grade));
 assert.strictEqual(health.state,IronLife.status().state);
 
 const version=IronLife.version();
-assert.strictEqual(version.version,'6.1.1');
+assert.strictEqual(version.version,'6.1.2');
 assert.strictEqual(version.stateVersion,1);
 
 const shutdown=IronLife.shutdown('test');
