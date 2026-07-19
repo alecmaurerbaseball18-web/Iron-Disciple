@@ -936,6 +936,125 @@
     };
   }
 
+
+  function normalizeBodyHistory(entries = []) {
+    return (Array.isArray(entries) ? entries : []).map((entry) => ({
+      date: toDateKey(entry.date || entry.timestamp),
+      weightLb: clamp(entry.weightLb || entry.weight || 0, 0, 1000),
+      calories: clamp(entry.calories || entry.intakeCalories || 0, 0, 10000),
+      steps: clamp(entry.steps || 0, 0, 100000),
+      trainingMinutes: clamp(entry.trainingMinutes || entry.exerciseMinutes || 0, 0, 1440),
+      sleepHours: clamp(entry.sleepHours || entry.sleep || 0, 0, 24),
+      readiness: clamp(entry.readiness || entry.readinessScore || 0, 0, 100),
+      recovery: clamp(entry.recovery || entry.recoveryScore || 0, 0, 100)
+    })).filter((entry) => entry.date && entry.weightLb > 0).sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  function estimatePersonalTDEE(entries = [], fallbackProfile = {}) {
+    const rows = normalizeBodyHistory(entries);
+    if (rows.length < 7) {
+      const fallback = baseTargets(normalizeProfile(fallbackProfile), {}).calories;
+      return { tdee: fallback, confidence: 'low', sampleDays: rows.length, method: 'formula-fallback', weeklyWeightChangeLb: 0 };
+    }
+    const first = rows[0];
+    const last = rows[rows.length - 1];
+    const elapsedDays = Math.max(1, (new Date(last.date) - new Date(first.date)) / 86400000);
+    const averageCalories = average(rows.map((row) => row.calories).filter((value) => value > 0));
+    const weightChangeLb = last.weightLb - first.weightLb;
+    const dailyEnergyImbalance = weightChangeLb * 3500 / elapsedDays;
+    const tdee = round(Math.max(1200, averageCalories - dailyEnergyImbalance), 25);
+    const coverage = rows.filter((row) => row.calories > 0).length / rows.length;
+    const confidence = rows.length >= 28 && coverage >= 0.85 ? 'high' : rows.length >= 14 && coverage >= 0.65 ? 'medium' : 'low';
+    return { tdee, confidence, sampleDays: rows.length, method: 'intake-weight-balance', averageCalories: round(averageCalories, 1), weeklyWeightChangeLb: round(weightChangeLb / elapsedDays * 7, 0.1), coverage: round(coverage * 100, 1) };
+  }
+
+  function metabolicAdaptation(input = {}) {
+    const profile = normalizeProfile(input.profile || {});
+    const observed = input.personalTDEE || estimatePersonalTDEE(input.history || [], profile);
+    const predicted = round(bmr(profile) * ({ low: 1.3, moderate: 1.5, high: 1.7, 'very-high': 1.85 }[profile.activity] || 1.5), 25);
+    const delta = observed.tdee - predicted;
+    const percent = predicted ? delta / predicted * 100 : 0;
+    return {
+      observedTDEE: observed.tdee,
+      predictedTDEE: predicted,
+      differenceCalories: round(delta, 25),
+      differencePct: round(percent, 0.1),
+      status: percent <= -12 ? 'suppressed' : percent >= 12 ? 'elevated' : 'normal',
+      confidence: observed.confidence
+    };
+  }
+
+  function recoveryPrediction(input = {}) {
+    const history = normalizeBodyHistory(input.history || []);
+    const recent = history.slice(-7);
+    const sleep = average(recent.map((row) => row.sleepHours).filter(Boolean)) || clamp(input.sleepHours || 7, 0, 24);
+    const readiness = average(recent.map((row) => row.readiness).filter(Boolean)) || clamp(input.readiness || 70, 0, 100);
+    const recovery = average(recent.map((row) => row.recovery).filter(Boolean)) || clamp(input.recovery || 70, 0, 100);
+    const trainingMinutes = recent.reduce((sum, row) => sum + row.trainingMinutes, 0);
+    const calorieCoverage = recent.length ? recent.filter((row) => row.calories > 0).length / recent.length : 0;
+    let score = sleep / 8 * 35 + readiness * 0.3 + recovery * 0.25 + Math.max(0, 10 - Math.max(0, trainingMinutes - 420) / 42);
+    if (calorieCoverage < 0.5) score -= 5;
+    score = clamp(Math.round(score), 0, 100);
+    return {
+      score,
+      status: score >= 80 ? 'ready' : score >= 65 ? 'manageable' : score >= 50 ? 'limited' : 'recovery-priority',
+      expectedReadiness: clamp(Math.round(readiness * 0.55 + recovery * 0.25 + Math.min(100, sleep / 8 * 100) * 0.2), 0, 100),
+      drivers: { sleepHours: round(sleep, 0.1), readiness: round(readiness, 1), recovery: round(recovery, 1), sevenDayTrainingMinutes: trainingMinutes },
+      recommendation: score < 50 ? 'Reduce training intensity and prioritize sleep, hydration, and adequate calories.' : score < 65 ? 'Keep the session submaximal and complete recovery nutrition immediately afterward.' : 'Proceed with the planned session while maintaining hydration and post-training nutrition.'
+    };
+  }
+
+  function personalResponseModel(input = {}) {
+    const rows = normalizeBodyHistory(input.history || []);
+    const correlations = performanceCorrelations(rows.map((row) => ({
+      calories: row.calories,
+      sleep: row.sleepHours ? clamp(row.sleepHours / 8 * 100, 0, 100) : 0,
+      recovery: row.recovery,
+      readiness: row.readiness,
+      performance: row.trainingMinutes
+    })));
+    const tdee = estimatePersonalTDEE(rows, input.profile || {});
+    const adaptation = metabolicAdaptation({ profile: input.profile || {}, personalTDEE: tdee });
+    const recovery = recoveryPrediction({ history: rows, readiness: input.readiness, recovery: input.recovery, sleepHours: input.sleepHours });
+    const confidenceScore = clamp(Math.round(Math.min(100, rows.length * 3) * 0.55 + (tdee.coverage || 0) * 0.45), 0, 100);
+    return {
+      generatedAt: new Date().toISOString(),
+      sampleDays: rows.length,
+      confidenceScore,
+      confidence: confidenceScore >= 80 ? 'high' : confidenceScore >= 50 ? 'medium' : 'low',
+      personalTDEE: tdee,
+      metabolicAdaptation: adaptation,
+      recoveryPrediction: recovery,
+      correlations,
+      insight: rows.length < 14 ? 'More daily weight and calorie data are needed before strong personalized conclusions can be made.' : adaptation.status === 'suppressed' ? 'Observed expenditure is below the formula estimate. Consider a smaller deficit, diet break, or reduced fatigue load.' : 'The model has enough data to begin personalizing calorie and recovery recommendations.'
+    };
+  }
+
+  function adaptiveMaintenanceTarget(input = {}) {
+    const profile = normalizeProfile(input.profile || {});
+    const model = input.model || personalResponseModel(input);
+    const modeAdjustments = { cut: -clamp(input.deficitCalories || 500, 150, 1000), maintain: 0, recomp: -150, gain: clamp(input.surplusCalories || 250, 100, 500) };
+    const calories = round(Math.max(1400, model.personalTDEE.tdee + modeAdjustments[profile.mode]), 25);
+    const protein = round(Math.max(leanMassLb(profile), profile.weightLb * 0.75), 5);
+    const fat = round(Math.max(profile.weightLb * 0.28, 50), 5);
+    const carbs = round(Math.max((calories - protein * 4 - fat * 9) / 4, 75), 5);
+    return { calories, protein, carbs, fat, source: model.personalTDEE.method, confidence: model.confidence, maintenanceCalories: model.personalTDEE.tdee };
+  }
+
+  function buildBodyIntelligence(input = {}) {
+    const model = personalResponseModel(input);
+    const adaptiveTargets = adaptiveMaintenanceTarget({ ...input, model });
+    const forecast = bodyCompositionForecast({ ...input, profile: { ...(input.profile || {}), weightLb: input.profile?.weightLb || normalizeBodyHistory(input.history || []).slice(-1)[0]?.weightLb } });
+    return {
+      generatedAt: new Date().toISOString(),
+      model,
+      adaptiveTargets,
+      forecast,
+      recovery: model.recoveryPrediction,
+      status: model.confidence === 'low' ? 'learning' : model.metabolicAdaptation.status === 'suppressed' ? 'adaptation-warning' : 'personalized'
+    };
+  }
+
   return {
     ACTIVITY_PROFILES,
     DEFAULT_MEALS,
@@ -990,6 +1109,13 @@
     gradeFromScore,
     buildCoachReport,
     buildMissionStatus,
-    buildDashboard
+    buildDashboard,
+    normalizeBodyHistory,
+    estimatePersonalTDEE,
+    metabolicAdaptation,
+    recoveryPrediction,
+    personalResponseModel,
+    adaptiveMaintenanceTarget,
+    buildBodyIntelligence
   };
 });
