@@ -6,8 +6,8 @@ const modulePath = path.resolve(__dirname, '../src/modules/life-orchestrator.js'
 delete require.cache[modulePath];
 const IronLife = require(modulePath);
 
-assert.strictEqual(IronLife.VERSION, '6.1.2');
-assert.strictEqual(IronLife.BUILD, 'life-orchestrator-configuration');
+assert.strictEqual(IronLife.VERSION, '6.1.3');
+assert.strictEqual(IronLife.BUILD, 'life-orchestrator-enumerations');
 assert(Object.isFrozen(IronLife.defaultConfig));
 assert(Object.isFrozen(IronLife.configRules));
 

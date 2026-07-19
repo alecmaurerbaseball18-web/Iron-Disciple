@@ -2,11 +2,11 @@
 
 ## Current implementation
 
-**Version:** 6.1.2  
+**Version:** 6.1.3  
 **Sprint:** 6.1.1 — Core Infrastructure  
-**Completed task:** 6.1.1.2 — Configuration System
+**Completed task:** 6.1.1.3 — Shared Enumerations and Constants
 
-The Life Orchestrator currently provides a non-invasive runtime bootstrap and a validated, immutable configuration system. Planning, scheduling, conflict resolution, and next-action logic have not yet been activated.
+The Life Orchestrator currently provides a non-invasive runtime bootstrap, a validated immutable configuration system, and the canonical constants and enumerations required by future orchestration subsystems. Planning, scheduling, conflict resolution, and next-action logic have not yet been activated.
 
 ## Runtime API
 
@@ -49,6 +49,16 @@ Unknown keys generate warnings. Invalid values are rejected before runtime confi
 
 In supported browser environments, configuration can be loaded from and saved to `localStorage` or `sessionStorage`. Persistence degrades safely when storage is unavailable. Node-based tests run without browser storage.
 
+## Shared vocabulary API
+
+- `listEnums()` — lists all registered enum names.
+- `getEnum(name)` — returns an immutable enum or `null`.
+- `isEnumValue(name, value)` — tests membership without callers duplicating value lists.
+- `getConstant(path?)` — reads immutable grouped constants using dotted paths.
+- `validateVocabulary()` — verifies enum freezing and duplicate-value safety.
+
+The registry includes lifecycle, dependency, environment, shift, priority, life-state, module-state, event, task, conflict, schedule-item, flexibility, energy, readiness, recovery, confidence, planning-horizon, time-granularity, source, and resolution-strategy vocabularies.
+
 ## Next task
 
-Task 6.1.1.3 will formalize shared enumerations and constants used across future Life Orchestrator subsystems.
+Task 6.1.1.4 will consolidate and harden the shared utility library used by the remaining Life Orchestrator infrastructure.

@@ -1,12 +1,13 @@
 /**
  * Iron Disciple OS — Life Orchestrator
- * Sprint 6.1.1, Task 6.1.1.2: Configuration System
+ * Sprint 6.1.1, Task 6.1.1.3: Shared Enumerations and Constants
  *
  * Provides the non-invasive runtime foundation for Phase 6 plus a validated,
- * immutable, versioned configuration layer. Planning, scheduling, and
- * optimization business logic remain intentionally out of scope.
+ * immutable, versioned configuration layer plus the canonical vocabulary used by
+ * future planning, scheduling, optimization, and execution subsystems. Business
+ * logic remains intentionally out of scope.
  *
- * @version 6.1.2
+ * @version 6.1.3
  */
 (function universalModuleDefinition(root, factory) {
   const api = factory(root);
@@ -24,8 +25,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function createIronLife(root) {
   'use strict';
 
-  const VERSION = '6.1.2';
-  const BUILD = 'life-orchestrator-configuration';
+  const VERSION = '6.1.3';
+  const BUILD = 'life-orchestrator-enumerations';
   const MODULE_NAME = 'IronLife';
   const AUTHOR = 'Iron Disciple';
   const STATE_VERSION = 1;
@@ -34,6 +35,15 @@
   const MAX_RETRIES = 3;
   const EVENT_LIMIT = 1000;
   const CACHE_PREFIX = 'iron-disciple-life';
+  const MINUTES_PER_HOUR = 60;
+  const MINUTES_PER_DAY = 1440;
+  const DAYS_PER_WEEK = 7;
+  const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+  const CLOCK_TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+  const MAX_PRIORITY_SCORE = 100;
+  const MAX_CONFIDENCE_SCORE = 100;
+  const DEFAULT_CONFIDENCE_SCORE = 50;
+  const UNASSIGNED_TIME = null;
 
   const LifecycleState = Object.freeze({
     CREATED: 'created',
@@ -73,6 +83,220 @@
     RUNTIME: 'runtime',
     IMPORT: 'import',
     RESET: 'reset'
+  });
+
+
+  const ShiftType = Object.freeze({
+    DAY: 'day-shift',
+    NIGHT: 'night-shift',
+    OFF: 'off-day',
+    TRANSITION_TO_DAYS: 'transition-to-days',
+    TRANSITION_TO_NIGHTS: 'transition-to-nights',
+    COURT: 'court-day',
+    OVERTIME: 'overtime',
+    ON_CALL: 'on-call',
+    TOURNAMENT: 'tournament-day',
+    VACATION: 'vacation',
+    SICK: 'sick-day',
+    RECOVERY: 'recovery-day',
+    CUSTOM: 'custom'
+  });
+
+  const Priority = Object.freeze({
+    CRITICAL: 'critical',
+    URGENT: 'urgent',
+    HIGH: 'high',
+    MEDIUM: 'medium',
+    LOW: 'low',
+    OPTIONAL: 'optional'
+  });
+
+  const LifeState = Object.freeze({
+    NORMAL: 'normal',
+    OVERLOADED: 'overloaded',
+    RECOVERING: 'recovering',
+    TRANSITIONING: 'transitioning',
+    COMPETING: 'competing',
+    TRAVELING: 'traveling',
+    ILL: 'ill',
+    DEGRADED: 'degraded'
+  });
+
+  const ModuleState = Object.freeze({
+    UNREGISTERED: 'unregistered',
+    REGISTERED: 'registered',
+    INITIALIZING: 'initializing',
+    READY: 'ready',
+    DEGRADED: 'degraded',
+    DISABLED: 'disabled',
+    FAILED: 'failed',
+    STOPPED: 'stopped'
+  });
+
+  const EventType = Object.freeze({
+    LIFECYCLE: 'lifecycle',
+    CONFIGURATION: 'configuration',
+    STATE_CHANGED: 'state-changed',
+    PLAN_CREATED: 'plan-created',
+    PLAN_UPDATED: 'plan-updated',
+    PLAN_REPLANNED: 'plan-replanned',
+    TASK_CREATED: 'task-created',
+    TASK_UPDATED: 'task-updated',
+    TASK_COMPLETED: 'task-completed',
+    CONFLICT_DETECTED: 'conflict-detected',
+    CONFLICT_RESOLVED: 'conflict-resolved',
+    NEXT_ACTION_CHANGED: 'next-action-changed',
+    DEPENDENCY_CHANGED: 'dependency-changed',
+    HEALTH_CHANGED: 'health-changed',
+    ERROR: 'error'
+  });
+
+  const TaskStatus = Object.freeze({
+    BACKLOG: 'backlog',
+    PLANNED: 'planned',
+    READY: 'ready',
+    IN_PROGRESS: 'in-progress',
+    BLOCKED: 'blocked',
+    DEFERRED: 'deferred',
+    SKIPPED: 'skipped',
+    COMPLETED: 'completed',
+    CANCELLED: 'cancelled'
+  });
+
+  const ConflictType = Object.freeze({
+    TIME_OVERLAP: 'time-overlap',
+    RESOURCE: 'resource',
+    ENERGY: 'energy',
+    READINESS: 'readiness',
+    RECOVERY: 'recovery',
+    DEPENDENCY: 'dependency',
+    LOCATION: 'location',
+    TRAVEL: 'travel',
+    PRIORITY: 'priority',
+    SLEEP_PROTECTION: 'sleep-protection',
+    MEAL_TIMING: 'meal-timing',
+    CAPACITY: 'capacity',
+    POLICY: 'policy'
+  });
+
+  const ScheduleItemType = Object.freeze({
+    FIXED_EVENT: 'fixed-event',
+    WORK: 'work',
+    COMMUTE: 'commute',
+    SLEEP: 'sleep',
+    MEAL: 'meal',
+    HYDRATION: 'hydration',
+    TRAINING: 'training',
+    RECOVERY: 'recovery',
+    MOBILITY: 'mobility',
+    FAMILY: 'family',
+    FAITH: 'faith',
+    PROJECT: 'project',
+    ADMIN: 'admin',
+    BUFFER: 'buffer',
+    FREE_TIME: 'free-time'
+  });
+
+  const Flexibility = Object.freeze({
+    FIXED: 'fixed',
+    LIMITED: 'limited',
+    FLEXIBLE: 'flexible',
+    FLOATING: 'floating'
+  });
+
+  const EnergyLevel = Object.freeze({
+    VERY_LOW: 'very-low',
+    LOW: 'low',
+    MODERATE: 'moderate',
+    HIGH: 'high',
+    PEAK: 'peak'
+  });
+
+  const ReadinessBand = Object.freeze({
+    CRITICAL: 'critical',
+    LOW: 'low',
+    MODERATE: 'moderate',
+    GOOD: 'good',
+    HIGH: 'high'
+  });
+
+  const RecoveryBand = Object.freeze({
+    POOR: 'poor',
+    LIMITED: 'limited',
+    ADEQUATE: 'adequate',
+    GOOD: 'good',
+    OPTIMAL: 'optimal'
+  });
+
+  const ConfidenceBand = Object.freeze({
+    VERY_LOW: 'very-low',
+    LOW: 'low',
+    MODERATE: 'moderate',
+    HIGH: 'high',
+    VERY_HIGH: 'very-high'
+  });
+
+  const PlanningHorizon = Object.freeze({
+    NOW: 'now',
+    DAY: 'day',
+    WEEK: 'week',
+    MONTH: 'month',
+    QUARTER: 'quarter',
+    YEAR: 'year'
+  });
+
+  const TimeGranularity = Object.freeze({
+    FIVE_MINUTES: 5,
+    TEN_MINUTES: 10,
+    FIFTEEN_MINUTES: 15,
+    THIRTY_MINUTES: 30,
+    SIXTY_MINUTES: 60
+  });
+
+  const SourceType = Object.freeze({
+    USER: 'user',
+    CALENDAR: 'calendar',
+    SYSTEM: 'system',
+    MODULE: 'module',
+    INFERENCE: 'inference',
+    TEMPLATE: 'template',
+    IMPORT: 'import'
+  });
+
+  const ResolutionStrategy = Object.freeze({
+    KEEP_FIXED: 'keep-fixed',
+    MOVE: 'move',
+    SHORTEN: 'shorten',
+    SPLIT: 'split',
+    SUBSTITUTE: 'substitute',
+    DEFER: 'defer',
+    DROP: 'drop',
+    ESCALATE: 'escalate'
+  });
+
+  const ENUM_REGISTRY = Object.freeze({
+    LifecycleState,
+    Severity,
+    DependencyState,
+    EnvironmentType,
+    ConfigurationSource,
+    ShiftType,
+    Priority,
+    LifeState,
+    ModuleState,
+    EventType,
+    TaskStatus,
+    ConflictType,
+    ScheduleItemType,
+    Flexibility,
+    EnergyLevel,
+    ReadinessBand,
+    RecoveryBand,
+    ConfidenceBand,
+    PlanningHorizon,
+    TimeGranularity,
+    SourceType,
+    ResolutionStrategy
   });
 
   const DEPENDENCY_DEFINITIONS = Object.freeze([
@@ -893,7 +1117,7 @@
       stateVersion: STATE_VERSION,
       configVersion: CONFIG_VERSION,
       author: AUTHOR,
-      api: '6.1.2-configuration'
+      api: '6.1.3-enumerations'
     });
   }
 
@@ -931,6 +1155,77 @@
     return instance || null;
   }
 
+  function listEnums() {
+    return deepFreeze(Object.keys(ENUM_REGISTRY));
+  }
+
+  function getEnum(name) {
+    if (!name || !Object.prototype.hasOwnProperty.call(ENUM_REGISTRY, name)) return null;
+    return ENUM_REGISTRY[name];
+  }
+
+  function isEnumValue(name, value) {
+    const enumeration = getEnum(name);
+    return Boolean(enumeration && Object.values(enumeration).includes(value));
+  }
+
+  function getConstant(path) {
+    const value = getByPath(SYSTEM_CONSTANTS, path);
+    return value === undefined ? null : deepFreeze(deepClone(value));
+  }
+
+  function validateVocabulary() {
+    const errors = [];
+    Object.entries(ENUM_REGISTRY).forEach(([name, enumeration]) => {
+      const values = Object.values(enumeration);
+      if (new Set(values).size !== values.length) {
+        errors.push({ code: 'DUPLICATE_ENUM_VALUE', enum: name });
+      }
+      if (!Object.isFrozen(enumeration)) {
+        errors.push({ code: 'ENUM_NOT_FROZEN', enum: name });
+      }
+    });
+    return deepFreeze({
+      ok: errors.length === 0,
+      enumCount: Object.keys(ENUM_REGISTRY).length,
+      constantCount: Object.keys(SYSTEM_CONSTANTS).length,
+      errors,
+      checkedAt: nowIso()
+    });
+  }
+
+  const SYSTEM_CONSTANTS = deepFreeze({
+    identity: {
+      version: VERSION,
+      build: BUILD,
+      moduleName: MODULE_NAME,
+      author: AUTHOR,
+      stateVersion: STATE_VERSION,
+      configVersion: CONFIG_VERSION
+    },
+    runtime: {
+      defaultTimeoutMs: DEFAULT_TIMEOUT_MS,
+      maxRetries: MAX_RETRIES,
+      eventLimit: EVENT_LIMIT,
+      cachePrefix: CACHE_PREFIX
+    },
+    time: {
+      minutesPerHour: MINUTES_PER_HOUR,
+      minutesPerDay: MINUTES_PER_DAY,
+      daysPerWeek: DAYS_PER_WEEK,
+      unassigned: UNASSIGNED_TIME
+    },
+    scoring: {
+      maximumPriority: MAX_PRIORITY_SCORE,
+      maximumConfidence: MAX_CONFIDENCE_SCORE,
+      defaultConfidence: DEFAULT_CONFIDENCE_SCORE
+    },
+    patterns: {
+      isoDate: ISO_DATE_PATTERN.source,
+      clockTime: CLOCK_TIME_PATTERN.source
+    }
+  });
+
   const metadata = deepFreeze({
     name: MODULE_NAME,
     version: VERSION,
@@ -948,7 +1243,10 @@
       'structured-health-reporting',
       'validated-configuration',
       'configuration-import-export',
-      'configuration-persistence'
+      'configuration-persistence',
+      'shared-enumerations',
+      'canonical-constants',
+      'vocabulary-validation'
     ]
   });
 
@@ -958,15 +1256,8 @@
     MODULE_NAME,
     AUTHOR,
     metadata,
-    constants: deepFreeze({
-      STATE_VERSION,
-      CONFIG_VERSION,
-      DEFAULT_TIMEOUT_MS,
-      MAX_RETRIES,
-      EVENT_LIMIT,
-      CACHE_PREFIX
-    }),
-    enums: deepFreeze({ LifecycleState, Severity, DependencyState, EnvironmentType, ConfigurationSource }),
+    constants: SYSTEM_CONSTANTS,
+    enums: ENUM_REGISTRY,
     defaultConfig: DEFAULT_CONFIG,
     configRules: CONFIG_RULES,
     initialize,
@@ -979,6 +1270,11 @@
     detectEnvironment,
     inspectDependencies,
     getDependency,
+    listEnums,
+    getEnum,
+    isEnumValue,
+    getConstant,
+    validateVocabulary,
     configure,
     setConfig,
     getConfig,

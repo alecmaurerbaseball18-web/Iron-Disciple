@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.1.3 — Shared Enumerations and Constants
+
+- Added the canonical vocabulary for shifts, priorities, life states, modules, events, tasks, conflicts, schedule items, readiness, recovery, planning horizons, and resolution strategies.
+- Added immutable grouped system constants for identity, runtime limits, time, scoring, and validation patterns.
+- Added enum discovery, enum-value validation, constant lookup, and vocabulary integrity APIs.
+- Added dedicated regression coverage for immutability, uniqueness, lookup behavior, and public compatibility.
+
 ## 6.1.2 — Life Orchestrator Configuration System
 
 - Added validated, deeply immutable runtime configuration.
