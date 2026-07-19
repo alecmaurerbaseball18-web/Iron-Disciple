@@ -1,4 +1,4 @@
-const CACHE='iron-disciple-mission-v3-2';const ASSETS=['./','./index.html','./404.html','./assets/css/styles.css','./assets/icons/icon.svg','./src/core/bootstrap.js','./src/core/constants.js','./src/core/utilities.js','./src/core/integration.js','./src/app.js',
+const CACHE='iron-disciple-mission-v3-3';const ASSETS=['./','./index.html','./404.html','./assets/css/styles.css','./assets/icons/icon.svg','./src/core/bootstrap.js','./src/core/constants.js','./src/core/utilities.js','./src/core/integration.js','./src/app.js',
   './src/phase1-foundation.js',
   './src/phase1-hardening.js','./src/core/os-foundation.js','./src/core/platform-services.js','./src/core/platform-hardening.js','./src/core/platform-automation.js','./src/core/platform-kernel.js','./src/modules/training-system.js','./src/modules/training-advanced.js','./src/training-phase2.js','./src/training-phase22.js','./src/modules/training-session-pro.js','./src/training-phase23.js','./src/modules/training-coach.js','./src/training-phase24.js','./src/modules/training-periodization.js','./src/training-phase25.js',
   './src/modules/training-library-pro.js',

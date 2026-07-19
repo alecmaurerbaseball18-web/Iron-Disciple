@@ -27,6 +27,14 @@ function render(){
   blockers.innerHTML=current.blockers.length?current.blockers.map(item=>`<button class="mission-blocker ${item.level}" data-mission-view="${esc(item.view)}" type="button"><strong>${esc(item.title)}</strong><span>${esc(item.detail)}</span></button>`).join(""):'<div class="mission-clear"><strong>No critical blockers detected.</strong><span>Protect the plan and keep executing.</span></div>';
   const plan=byId("missionCommandPlan");
   plan.innerHTML=current.plan.map(item=>`<button class="mission-plan-step" data-mission-view="${esc(item.view)}" type="button"><span>${item.rank}</span><div><strong>${esc(item.title)}</strong><small>${esc(item.type)} · ${esc(item.reason)}</small></div></button>`).join("");
+  byId("missionCloseoutStatus").textContent=current.closeout.status;
+  byId("missionCloseoutProgress").textContent=`${current.closeout.execution}%`;
+  byId("missionCloseoutGuidance").textContent=current.closeout.guidance;
+  const carryover=byId("missionCarryover");
+  carryover.innerHTML=current.closeout.carryover.length?current.closeout.carryover.map(item=>`<button class="mission-carryover-item" data-mission-view="${esc(item.view)}" type="button"><span>${esc(item.type)}</span><strong>${esc(item.title)}</strong></button>`).join(""):'<div class="mission-clear"><strong>No unresolved carryover detected.</strong><span>Finish the review and preserve a clean launch for tomorrow.</span></div>';
+  byId("missionTomorrowTitle").textContent=current.tomorrow.title;
+  byId("missionTomorrowSource").textContent=current.tomorrow.source;
+  byId("missionTomorrowOpen").dataset.missionView=current.tomorrow.view;
   global.AppState?.set?.("missionControl.brief",current,{source:"phase3-mission-control"});
   global.IronEvents?.emit?.("mission-control:rendered",current);
   return current;
@@ -53,5 +61,5 @@ function bind(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{bind();render()});
-global.IronMissionControlUI={version:"3.2.0",render,openAction};
+global.IronMissionControlUI={version:"3.3.0",render,openAction};
 })(window);

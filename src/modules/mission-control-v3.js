@@ -116,6 +116,46 @@ function momentum(state,now=new Date()){
   return {value,label:value>=80?"Strong":value>=60?"Building":value>=40?"Unsteady":"Stalled"};
 }
 
+function dailyCloseout(state,now=new Date()){
+  const today=todayKey();
+  const review=(state.reviews||[]).filter(item=>item.date===today).at(-1)||null;
+  const big=state.bigThree||[];
+  const tasks=state.tasks||[];
+  const blocks=state.timeBlocks||[];
+  const completedBig=big.filter(item=>item.done).length;
+  const completedTasks=tasks.filter(item=>item.done).length;
+  const completedBlocks=blocks.filter(item=>item.done).length;
+  const total=Math.max(1,big.length+tasks.length+blocks.length);
+  const completed=completedBig+completedTasks+completedBlocks;
+  const execution=percent(completed,total);
+  const missed=blocks.filter(item=>!item.done&&parseTime(item.time)&&parseTime(item.time)<now);
+  const overdue=tasks.filter(item=>!item.done&&item.due&&String(item.due)<=today);
+  const carryover=[
+    ...big.filter(item=>!item.done&&item.text).map(item=>({title:item.text,type:"Big Three",view:"execute"})),
+    ...overdue.map(item=>({title:item.text,type:"Overdue task",view:"execute"})),
+    ...missed.map(item=>({title:item.title,type:"Missed block",view:"execute"}))
+  ].filter((item,index,items)=>items.findIndex(other=>other.title===item.title)===index).slice(0,3);
+  const hour=now.getHours();
+  const status=review?"Closed":hour>=18?"Close the loop":execution>=70?"Strong position":"Still open";
+  const guidance=review
+    ?"Today’s review is recorded. Protect tomorrow’s first priority and shut the day down cleanly."
+    :hour>=18
+      ?"Record the win, the lesson, and tomorrow’s first move before the day ends."
+      :carryover.length
+        ?"Resolve, reschedule, or deliberately drop the open commitments that could leak into tomorrow."
+        :"Keep executing. The day is positioned for a clean closeout.";
+  return {reviewed:Boolean(review),review,status,execution,completed,total,completedBig,completedTasks,completedBlocks,carryover,guidance};
+}
+
+function tomorrowLaunch(state,now=new Date()){
+  const closeout=dailyCloseout(state,now);
+  if(closeout.review?.tomorrow)return {title:closeout.review.tomorrow,source:"Daily review",view:"execute"};
+  if(closeout.carryover[0])return {title:closeout.carryover[0].title,source:`Carryover · ${closeout.carryover[0].type}`,view:closeout.carryover[0].view};
+  const goal=goalRunway(state)[0];
+  if(goal)return {title:`Define the next action for ${goal.text}`,source:`${goal.horizon} runway`,view:"mission"};
+  return {title:"Set tomorrow’s Big Three",source:"Planning",view:"execute"};
+}
+
 function briefing(state,now=new Date()){
   const score=readiness(state);
   const action=nextAction(state,now);
@@ -127,12 +167,14 @@ function briefing(state,now=new Date()){
   const blockers=blockerRadar(state,now,score);
   const plan=commandPlan(state,now);
   const momentumSignal=momentum(state,now);
-  return {version:"3.2.0",score,status,action,runway,schedule,execution,forecast,blockers,plan,momentum:momentumSignal,generatedAt:new Date().toISOString()};
+  const closeout=dailyCloseout(state,now);
+  const tomorrow=tomorrowLaunch(state,now);
+  return {version:"3.3.0",score,status,action,runway,schedule,execution,forecast,blockers,plan,momentum:momentumSignal,closeout,tomorrow,generatedAt:new Date().toISOString()};
 }
 
 function preferences(){return {...{showRunway:true,showSchedule:true},...readJson(PREF_KEY,{})}}
 function savePreferences(value){localStorage.setItem(PREF_KEY,JSON.stringify({...preferences(),...value}));return preferences()}
 
-const api={version:"3.2.0",APP_KEY,PREF_KEY,readState:()=>readJson(APP_KEY,{}),readiness,nextAction,goalRunway,scheduleSignal,executionForecast,blockerRadar,commandPlan,momentum,briefing,preferences,savePreferences};
+const api={version:"3.3.0",APP_KEY,PREF_KEY,readState:()=>readJson(APP_KEY,{}),readiness,nextAction,goalRunway,scheduleSignal,executionForecast,blockerRadar,commandPlan,momentum,dailyCloseout,tomorrowLaunch,briefing,preferences,savePreferences};
 global.IronMissionControl=api;
 })(window);
