@@ -1,5 +1,34 @@
 # Changelog
 
+## Phase 6.1.1.6.1 — Error Types
+
+- Added the canonical `IronLifeError` hierarchy in `src/core/errors.js`.
+- Added initialization, configuration, validation, dependency, module, state, persistence, scheduler, planner, timeout, network, and internal error types.
+- Added immutable structured error metadata, serialization, tracing fields, sanitized causes, and retry-count cloning.
+- Added dedicated error-type regression tests and documentation.
+- Updated the offline cache to `iron-disciple-v6.1.6.1`.
+
+
+## 6.1.5 — Logging & Diagnostics Engine
+
+- Added the centralized `src/core/logger.js` observability module.
+- Added structured log levels, categories, immutable entries, trace IDs, parent traces, and session correlation.
+- Added bounded ring-buffer retention, configurable browser persistence, filtering, keyword search, subscriptions, and JSON/CSV/text export.
+- Added synchronous and asynchronous performance measurement plus named timers.
+- Added module, performance, health, summary, and exportable diagnostics reports.
+- Removed direct production calls to `console.log`, `console.warn`, and `console.error` outside the logger boundary.
+- Added focused logger, trace, performance, and diagnostics regression suites.
+- Updated the offline cache to `iron-disciple-v6.1.5`.
+
+## 6.1.4 — Shared Utility Library Completion
+
+- Extended the canonical core utility module without introducing a competing namespace.
+- Added RFC 4122 version 4 UUID generation with secure-runtime support and a compatibility fallback.
+- Added structured safe execution for synchronous and asynchronous operations.
+- Added immutable benchmarking results and an independently controlled stopwatch utility.
+- Added focused regression coverage for identity, safe execution, timing, immutability, and compatibility.
+- Updated the offline cache version to `iron-disciple-v6.1.4`.
+
 ## 6.1.3 — Shared Enumerations and Constants
 
 - Added the canonical vocabulary for shifts, priorities, life states, modules, events, tasks, conflicts, schedule items, readiness, recovery, planning horizons, and resolution strategies.
@@ -47,7 +76,6 @@
 - Added goal probability and Monte Carlo goal simulation.
 - Added injury-risk, plateau, regression, and opportunity detection.
 - Added scenario simulation and browser API `window.IronPredict`.
-# Changelog
 
 ## 5.1.0 — Human Performance Engine
 - Added unified performance, readiness, and recovery scoring.
