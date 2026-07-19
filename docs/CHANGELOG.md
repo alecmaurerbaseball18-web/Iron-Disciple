@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.5.0 — Personal Knowledge Engine
+
+- Added personal baseline modeling and data-quality scoring.
+- Added lag-aware relationship discovery with confidence and evidence labels.
+- Added habit, training, nutrition, and work-shift response analysis.
+- Added nearest-history personal response prediction.
+- Added decision-outcome evaluation and continuous-learning hooks.
+- Added unified personal profile, insight, and knowledge report APIs.
+
+
 ## 5.4.0 — AI Coach Engine
 
 - Added structured morning briefings and evening reviews.

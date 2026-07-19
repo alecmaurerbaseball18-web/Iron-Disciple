@@ -1,11 +1,11 @@
-Iron Disciple OS — Phase 5.4 AI Coach Engine
+PHASE 5.5 — PERSONAL KNOWLEDGE ENGINE
 
-Upload these files to the matching repository paths and replace existing files when prompted.
+Upload every file in this patch to the matching repository path and replace existing files when prompted.
 
 New files:
-- src/modules/ai-coach.js
-- tests/ai-coach.test.js
-- docs/AI-COACH.md
+- src/modules/personal-knowledge-engine.js
+- tests/personal-knowledge-engine.test.js
+- docs/PERSONAL-KNOWLEDGE-ENGINE.md
 
 Updated files:
 - docs/CHANGELOG.md
@@ -16,4 +16,4 @@ Updated files:
 No files need to be deleted.
 
 Recommended commit message:
-Add Phase 5.4 AI Coach Engine
+Add Phase 5.5 Personal Knowledge Engine
