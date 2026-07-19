@@ -1,3 +1,56 @@
+/* ==========================================================================
+ * Registry Validation Helpers
+ * ========================================================================== */
+
+function validateDefinition(definition) {
+
+    if (!definition || typeof definition !== "object") {
+        throw new TypeError("Invalid error definition.");
+    }
+
+    const required = [
+        "code",
+        "name",
+        "category",
+        "severity",
+        "recoverable",
+        "retryable",
+        "defaultMessage",
+        "description"
+    ];
+
+    for (const property of required) {
+
+        if (!(property in definition)) {
+            throw new Error(
+                `Missing required property '${property}' on ${definition.code ?? "unknown error"}`
+            );
+        }
+
+    }
+
+    if (!Object.values(ErrorSeverity).includes(definition.severity)) {
+        throw new Error(
+            `Invalid severity '${definition.severity}' for ${definition.code}`
+        );
+    }
+
+    if (!Object.values(ErrorCategory).includes(definition.category)) {
+        throw new Error(
+            `Invalid category '${definition.category}' for ${definition.code}`
+        );
+    }
+
+    if (typeof definition.code !== "string" ||
+        !/^IRON\d{4}$/.test(definition.code)) {
+
+        throw new Error(
+            `Invalid error code format '${definition.code}'`
+        );
+
+    }
+
+}
 /**
  * Iron Disciple OS
  * Error Codes Registry
@@ -135,6 +188,217 @@
                 "The supplied value is invalid.",
                 "An unspecified input validation failure occurred."
             ),
+                DEPENDENCY: Object.freeze({
+
+        MODULE_NOT_FOUND: defineError({
+            code: "IRON1300",
+            name: "MODULE_NOT_FOUND",
+            category: ErrorCategory.DEPENDENCY,
+            severity: ErrorSeverity.ERROR,
+            recoverable: false,
+            retryable: false,
+            defaultMessage: "Required module was not found.",
+            description: "A required dependency could not be located."
+        }),
+
+        VERSION_MISMATCH: defineError({
+            code: "IRON1301",
+            name: "VERSION_MISMATCH",
+            category: ErrorCategory.DEPENDENCY,
+            severity: ErrorSeverity.ERROR,
+            recoverable: false,
+            retryable: false,
+            defaultMessage: "Dependency version mismatch.",
+            description: "Loaded dependency version is incompatible."
+        })
+
+    }),
+
+    MODULE: Object.freeze({
+
+        INITIALIZATION_FAILED: defineError({
+            code: "IRON1400",
+            name: "INITIALIZATION_FAILED",
+            category: ErrorCategory.MODULE,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Module initialization failed.",
+            description: "Module could not complete initialization."
+        }),
+
+        SHUTDOWN_FAILED: defineError({
+            code: "IRON1401",
+            name: "SHUTDOWN_FAILED",
+            category: ErrorCategory.MODULE,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Module shutdown failed.",
+            description: "Module failed to shut down cleanly."
+        })
+
+    }),
+
+    STATE: Object.freeze({
+
+        INVALID_STATE: defineError({
+            code: "IRON1500",
+            name: "INVALID_STATE",
+            category: ErrorCategory.STATE,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: false,
+            defaultMessage: "Invalid application state.",
+            description: "The requested operation is not valid for the current state."
+        }),
+
+        STATE_CORRUPTION: defineError({
+            code: "IRON1501",
+            name: "STATE_CORRUPTION",
+            category: ErrorCategory.STATE,
+            severity: ErrorSeverity.FATAL,
+            recoverable: false,
+            retryable: false,
+            defaultMessage: "State corruption detected.",
+            description: "Application state integrity verification failed."
+        })
+
+    }),
+
+    PERSISTENCE: Object.freeze({
+
+        SAVE_FAILED: defineError({
+            code: "IRON1600",
+            name: "SAVE_FAILED",
+            category: ErrorCategory.PERSISTENCE,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Failed to save data.",
+            description: "Persistent storage operation failed."
+        }),
+
+        LOAD_FAILED: defineError({
+            code: "IRON1601",
+            name: "LOAD_FAILED",
+            category: ErrorCategory.PERSISTENCE,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Failed to load data.",
+            description: "Persistent data could not be loaded."
+        })
+
+    }),
+
+    SCHEDULER: Object.freeze({
+
+        INVALID_SCHEDULE: defineError({
+            code: "IRON1700",
+            name: "INVALID_SCHEDULE",
+            category: ErrorCategory.SCHEDULER,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: false,
+            defaultMessage: "Invalid schedule.",
+            description: "Scheduler rejected an invalid schedule."
+        }),
+
+        CONFLICT_DETECTED: defineError({
+            code: "IRON1701",
+            name: "CONFLICT_DETECTED",
+            category: ErrorCategory.SCHEDULER,
+            severity: ErrorSeverity.WARN,
+            recoverable: true,
+            retryable: false,
+            defaultMessage: "Schedule conflict detected.",
+            description: "Scheduling conflict requires user resolution."
+        })
+
+    }),
+
+    PLANNER: Object.freeze({
+
+        PLAN_FAILED: defineError({
+            code: "IRON1800",
+            name: "PLAN_FAILED",
+            category: ErrorCategory.PLANNER,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Planning operation failed.",
+            description: "Planner could not generate a valid plan."
+        }),
+
+        GOAL_UNREACHABLE: defineError({
+            code: "IRON1801",
+            name: "GOAL_UNREACHABLE",
+            category: ErrorCategory.PLANNER,
+            severity: ErrorSeverity.WARN,
+            recoverable: true,
+            retryable: false,
+            defaultMessage: "Goal cannot currently be achieved.",
+            description: "Planner determined the requested goal is unreachable."
+        })
+
+    }),
+
+    NETWORK: Object.freeze({
+
+        CONNECTION_FAILED: defineError({
+            code: "IRON1900",
+            name: "CONNECTION_FAILED",
+            category: ErrorCategory.NETWORK,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Network connection failed.",
+            description: "Unable to establish a network connection."
+        }),
+
+        REQUEST_TIMEOUT: defineError({
+            code: "IRON1901",
+            name: "REQUEST_TIMEOUT",
+            category: ErrorCategory.NETWORK,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Network request timed out.",
+            description: "A network request exceeded the allowed timeout."
+        })
+
+    }),
+
+    TIMEOUT: Object.freeze({
+
+        OPERATION_TIMEOUT: defineError({
+            code: "IRON1950",
+            name: "OPERATION_TIMEOUT",
+            category: ErrorCategory.TIMEOUT,
+            severity: ErrorSeverity.ERROR,
+            recoverable: true,
+            retryable: true,
+            defaultMessage: "Operation timed out.",
+            description: "Execution exceeded the configured timeout."
+        })
+
+    }),
+
+    INTERNAL: Object.freeze({
+
+        UNKNOWN: defineError({
+            code: "IRON1999",
+            name: "UNKNOWN",
+            category: ErrorCategory.INTERNAL,
+            severity: ErrorSeverity.FATAL,
+            recoverable: false,
+            retryable: false,
+            defaultMessage: "Unknown internal error.",
+            description: "An unexpected framework error occurred."
+        })
+
+    })
             REQUIRED_FIELD: definition(
                 "VALIDATION.REQUIRED_FIELD",
                 "IRON-1201",
