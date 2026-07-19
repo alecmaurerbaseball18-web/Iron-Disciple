@@ -1127,7 +1127,7 @@
 
         ERROR_CODE: ERROR_CODE,
         DIAGNOSTICS: DIAGNOSTICS,
-        RUNTIME_LIMITS: {
+ RUNTIME_LIMITS: Object.freeze({
     MAX_EVENT_LOOP_BLOCK_MS: 50,
     MAX_RENDER_TIME_MS: 16,
     MAX_MEMORY_WARN_MB: 200,
@@ -1139,8 +1139,39 @@
     CACHE_TTL_MS: 300000,
     AUTOSAVE_INTERVAL_MS: 30000,
     HEARTBEAT_INTERVAL_MS: 10000
-},
-    FEATURE_FLAGS: Object.freeze({
+}),
+
+FEATURE_FLAGS: Object.freeze({
+
+    // Core
+    AI_COACH: true,
+    MISSION_CONTROL: true,
+    TRAINING_SYSTEM: true,
+    NUTRITION_SYSTEM: true,
+    KNOWLEDGE_ENGINE: true,
+    LIFE_ORCHESTRATOR: true,
+    PREDICTIVE_ANALYTICS: true,
+
+    // UI
+    ENABLE_ANIMATIONS: true,
+    ENABLE_SOUND_EFFECTS: false,
+    ENABLE_HAPTIC_FEEDBACK: true,
+    ENABLE_SPLASH_SCREEN: true,
+    ENABLE_DEV_CONSOLE: true,
+
+    // Performance
+    ENABLE_BACKGROUND_SYNC: true,
+    ENABLE_CACHE: true,
+    ENABLE_PREFETCH: true,
+    ENABLE_PERFORMANCE_MONITOR: true,
+
+    // Experimental
+    ENABLE_EXPERIMENTAL_UI: false,
+    ENABLE_BETA_FEATURES: false,
+    ENABLE_DEBUG_TOOLS: false
+
+}),
+
 EVENTS: Object.freeze({
 
     /* Application */
@@ -1181,32 +1212,6 @@ EVENTS: Object.freeze({
     PERFORMANCE_WARNING: "system:performanceWarning"
 
 }),
-    // Core
-    AI_COACH: true,
-    MISSION_CONTROL: true,
-    TRAINING_SYSTEM: true,
-    NUTRITION_SYSTEM: true,
-    KNOWLEDGE_ENGINE: true,
-    LIFE_ORCHESTRATOR: true,
-    PREDICTIVE_ANALYTICS: true,
-
-    // UI
-    ENABLE_ANIMATIONS: true,
-    ENABLE_SOUND_EFFECTS: false,
-    ENABLE_HAPTIC_FEEDBACK: true,
-    ENABLE_SPLASH_SCREEN: true,
-    ENABLE_DEV_CONSOLE: true,
-
-    // Performance
-    ENABLE_BACKGROUND_SYNC: true,
-    ENABLE_CACHE: true,
-    ENABLE_PREFETCH: true,
-    ENABLE_PERFORMANCE_MONITOR: true,
-
-    // Experimental
-    ENABLE_EXPERIMENTAL_UI: false,
-    ENABLE_BETA_FEATURES: false,
-    ENABLE_DEBUG_TOOLS: false
 
 }),
         
