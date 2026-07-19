@@ -445,6 +445,271 @@
     };
   }
 
+
+  function toDateKey(value) {
+    const date = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+  }
+
+  function normalizeWeighIns(entries = []) {
+    return (Array.isArray(entries) ? entries : [])
+      .map((entry) => ({
+        date: toDateKey(entry.date || entry.timestamp),
+        weightLb: clamp(entry.weightLb ?? entry.weight, 50, 800),
+        note: String(entry.note || '')
+      }))
+      .filter((entry) => entry.date && entry.weightLb)
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  function average(values = []) {
+    const valid = values.map(Number).filter(Number.isFinite);
+    return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : 0;
+  }
+
+  function weeklyWeightAverages(entries = []) {
+    const weighIns = normalizeWeighIns(entries);
+    const weeks = new Map();
+    weighIns.forEach((entry) => {
+      const date = new Date(`${entry.date}T12:00:00`);
+      const day = (date.getUTCDay() + 6) % 7;
+      date.setUTCDate(date.getUTCDate() - day);
+      const weekStart = date.toISOString().slice(0, 10);
+      if (!weeks.has(weekStart)) weeks.set(weekStart, []);
+      weeks.get(weekStart).push(entry.weightLb);
+    });
+    return [...weeks.entries()].map(([weekStart, values]) => ({
+      weekStart,
+      averageWeightLb: round(average(values), 0.1),
+      samples: values.length
+    }));
+  }
+
+  function weightTrend(entries = [], profile = {}) {
+    const p = normalizeProfile(profile);
+    const weeks = weeklyWeightAverages(entries);
+    if (weeks.length < 2) {
+      return {
+        status: 'insufficient-data',
+        weeks,
+        weeklyChangeLb: 0,
+        weeklyChangePct: 0,
+        targetWeeklyChangePct: p.mode === 'cut' ? -p.weeklyChangePct : p.mode === 'gain' ? p.weeklyChangePct : 0,
+        message: 'Record weigh-ins on at least two different weeks to calculate a reliable trend.'
+      };
+    }
+    const recent = weeks.slice(-4);
+    const first = recent[0].averageWeightLb;
+    const last = recent[recent.length - 1].averageWeightLb;
+    const intervals = Math.max(1, recent.length - 1);
+    const weeklyChangeLb = (last - first) / intervals;
+    const weeklyChangePct = first ? weeklyChangeLb / first * 100 : 0;
+    const target = p.mode === 'cut' ? -p.weeklyChangePct : p.mode === 'gain' ? p.weeklyChangePct : 0;
+    let status = 'on-target';
+    if (p.mode === 'cut') {
+      if (weeklyChangePct > -0.1) status = 'stalled';
+      else if (weeklyChangePct < -(p.weeklyChangePct + 0.45)) status = 'too-fast';
+      else if (weeklyChangePct > -(Math.max(0.1, p.weeklyChangePct - 0.35))) status = 'too-slow';
+    } else if (p.mode === 'gain') {
+      if (weeklyChangePct < 0.05) status = 'stalled';
+      else if (weeklyChangePct > p.weeklyChangePct + 0.35) status = 'too-fast';
+      else if (weeklyChangePct < Math.max(0.05, p.weeklyChangePct - 0.25)) status = 'too-slow';
+    } else if (Math.abs(weeklyChangePct) > 0.35) status = weeklyChangePct < 0 ? 'losing' : 'gaining';
+    return {
+      status,
+      weeks,
+      weeklyChangeLb: round(weeklyChangeLb, 0.1),
+      weeklyChangePct: round(weeklyChangePct, 0.01),
+      targetWeeklyChangePct: round(target, 0.01),
+      message: `The current trend is ${weeklyChangeLb < 0 ? 'down' : weeklyChangeLb > 0 ? 'up' : 'flat'} ${Math.abs(round(weeklyChangeLb, 0.1))} lb per week.`
+    };
+  }
+
+  function normalizeDailyLogs(logs = []) {
+    return (Array.isArray(logs) ? logs : []).map((entry) => ({
+      date: toDateKey(entry.date || entry.timestamp),
+      calories: clamp(entry.calories, 0, 10000),
+      protein: clamp(entry.protein, 0, 1000),
+      carbs: clamp(entry.carbs, 0, 1500),
+      fat: clamp(entry.fat, 0, 500),
+      fiber: clamp(entry.fiber, 0, 300),
+      water: clamp(entry.water, 0, 1000),
+      target: entry.target || entry.targets || {}
+    })).filter((entry) => entry.date);
+  }
+
+  function adherenceAnalytics(logs = [], fallbackTarget = {}) {
+    const normalized = normalizeDailyLogs(logs);
+    if (!normalized.length) return { score: 0, daysLogged: 0, calorieAdherence: 0, proteinAdherence: 0, hydrationAdherence: 0, consistency: 0 };
+    const daily = normalized.map((entry) => {
+      const target = { ...fallbackTarget, ...entry.target };
+      return {
+        calorie: target.calories ? Math.max(0, 100 - Math.abs(entry.calories - target.calories) / target.calories * 100) : 0,
+        protein: target.protein ? Math.min(100, entry.protein / target.protein * 100) : 0,
+        water: target.water ? Math.min(100, entry.water / target.water * 100) : 0,
+        complete: Number(Boolean(entry.calories || entry.protein || entry.water)) * 100
+      };
+    });
+    const calorieAdherence = average(daily.map((entry) => entry.calorie));
+    const proteinAdherence = average(daily.map((entry) => entry.protein));
+    const hydrationAdherence = average(daily.map((entry) => entry.water));
+    const consistency = average(daily.map((entry) => entry.complete));
+    return {
+      score: Math.round(calorieAdherence * 0.45 + proteinAdherence * 0.30 + hydrationAdherence * 0.15 + consistency * 0.10),
+      daysLogged: normalized.length,
+      calorieAdherence: Math.round(calorieAdherence),
+      proteinAdherence: Math.round(proteinAdherence),
+      hydrationAdherence: Math.round(hydrationAdherence),
+      consistency: Math.round(consistency)
+    };
+  }
+
+  function plateauDetection(entries = [], profile = {}, adherence = {}) {
+    const trend = weightTrend(entries, profile);
+    const p = normalizeProfile(profile);
+    const enoughData = trend.weeks.length >= 3;
+    const adherent = Number(adherence.score || 0) >= 80;
+    const stalled = p.mode === 'cut'
+      ? trend.weeklyChangePct > -0.15
+      : p.mode === 'gain'
+        ? trend.weeklyChangePct < 0.08
+        : Math.abs(trend.weeklyChangePct) < 0.08;
+    return {
+      isPlateau: Boolean(enoughData && adherent && stalled),
+      enoughData,
+      adherent,
+      trendStatus: trend.status,
+      reason: !enoughData
+        ? 'More weekly trend data is required.'
+        : !adherent
+          ? 'Improve adherence before changing calorie targets.'
+          : stalled
+            ? 'The weight trend has stalled despite strong adherence.'
+            : 'Progress remains measurable; no plateau adjustment is needed.'
+    };
+  }
+
+  function adaptiveCalorieAdjustment(profile = {}, currentPlan = {}, trend = {}, adherence = {}, options = {}) {
+    const p = normalizeProfile(profile);
+    const currentCalories = clamp(currentPlan.calories || targets(p).calories, 1200, 8000);
+    const minimumAdherence = clamp(options.minimumAdherence || 75, 50, 100);
+    const step = round(clamp(options.stepCalories || 150, 50, 300), 25);
+    let adjustment = 0;
+    let decision = 'hold';
+    let reason = 'Current targets remain appropriate.';
+    if ((adherence.score || 0) < minimumAdherence) {
+      reason = 'Targets are unchanged because adherence is not yet high enough to judge the plan accurately.';
+    } else if (p.mode === 'cut') {
+      if (trend.status === 'stalled' || trend.status === 'too-slow') {
+        adjustment = -step;
+        decision = 'decrease';
+        reason = 'Weight loss is slower than the selected target despite sufficient adherence.';
+      } else if (trend.status === 'too-fast') {
+        adjustment = step;
+        decision = 'increase';
+        reason = 'Weight loss is faster than planned, so calories should increase to protect performance and lean mass.';
+      }
+    } else if (p.mode === 'gain') {
+      if (trend.status === 'stalled' || trend.status === 'too-slow') {
+        adjustment = step;
+        decision = 'increase';
+        reason = 'Weight gain is slower than planned despite sufficient adherence.';
+      } else if (trend.status === 'too-fast') {
+        adjustment = -step;
+        decision = 'decrease';
+        reason = 'Weight gain is faster than planned, so calories should decrease to limit unnecessary fat gain.';
+      }
+    }
+    const floor = Math.max(1400, bmr(p) * 0.9);
+    const proposedCalories = round(Math.max(floor, currentCalories + adjustment), 25);
+    const actualAdjustment = proposedCalories - currentCalories;
+    return {
+      decision: actualAdjustment === 0 ? 'hold' : actualAdjustment > 0 ? 'increase' : 'decrease',
+      currentCalories,
+      adjustmentCalories: actualAdjustment,
+      proposedCalories,
+      reason,
+      applyAfterDays: 7,
+      safeguards: {
+        adherenceRequired: minimumAdherence,
+        minimumCalories: round(floor, 25),
+        maximumSingleAdjustment: step
+      }
+    };
+  }
+
+  function normalizeMeasurements(entries = []) {
+    return (Array.isArray(entries) ? entries : []).map((entry) => ({
+      date: toDateKey(entry.date || entry.timestamp),
+      waistIn: clamp(entry.waistIn || entry.waist, 0, 100),
+      chestIn: clamp(entry.chestIn || entry.chest, 0, 100),
+      hipsIn: clamp(entry.hipsIn || entry.hips, 0, 100),
+      armIn: clamp(entry.armIn || entry.arm, 0, 40),
+      thighIn: clamp(entry.thighIn || entry.thigh, 0, 60),
+      bodyFat: clamp(entry.bodyFat, 0, 70),
+      note: String(entry.note || '')
+    })).filter((entry) => entry.date).sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  function measurementTrend(entries = []) {
+    const normalized = normalizeMeasurements(entries);
+    if (normalized.length < 2) return { status: 'insufficient-data', entries: normalized, changes: {} };
+    const first = normalized[0];
+    const last = normalized[normalized.length - 1];
+    const keys = ['waistIn', 'chestIn', 'hipsIn', 'armIn', 'thighIn', 'bodyFat'];
+    const changes = Object.fromEntries(keys.map((key) => [key, round((last[key] || 0) - (first[key] || 0), 0.1)]));
+    return { status: 'ready', entries: normalized, firstDate: first.date, latestDate: last.date, changes };
+  }
+
+  function normalizeProgressPhotos(entries = []) {
+    return (Array.isArray(entries) ? entries : []).map((entry) => ({
+      id: String(entry.id || `photo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`),
+      date: toDateKey(entry.date || entry.timestamp),
+      view: ['front', 'side', 'back', 'other'].includes(entry.view) ? entry.view : 'other',
+      url: String(entry.url || entry.dataUrl || ''),
+      note: String(entry.note || '')
+    })).filter((entry) => entry.date && entry.url);
+  }
+
+  function coachingExplanation(profile = {}, trend = {}, adherence = {}, adjustment = {}, plateau = {}) {
+    const p = normalizeProfile(profile);
+    const actions = [];
+    if ((adherence.score || 0) < 75) actions.push('Log food and body weight consistently for the next seven days before changing calories.');
+    if ((adherence.proteinAdherence || 0) < 85) actions.push('Raise protein consistency by planning the first two protein servings before the day begins.');
+    if ((adherence.hydrationAdherence || 0) < 80) actions.push('Use scheduled water checkpoints rather than relying on thirst alone.');
+    if (adjustment.adjustmentCalories) actions.push(`Change the daily calorie target by ${adjustment.adjustmentCalories > 0 ? '+' : ''}${adjustment.adjustmentCalories} calories and reassess after seven compliant days.`);
+    if (!actions.length) actions.push('Keep the current targets unchanged and continue collecting trend data.');
+    return {
+      headline: plateau.isPlateau ? 'A true plateau is likely.' : adjustment.decision === 'hold' ? 'The plan should remain stable.' : `A calorie ${adjustment.decision} is supported.`,
+      summary: `${p.mode === 'cut' ? 'Fat-loss' : p.mode === 'gain' ? 'Mass-gain' : 'Body-composition'} trend: ${trend.message || 'insufficient data'}`,
+      rationale: adjustment.reason,
+      actions
+    };
+  }
+
+  function buildWeeklyNutritionReview(input = {}) {
+    const profile = normalizeProfile(input.profile || {});
+    const currentPlan = input.currentPlan || buildDailyNutritionPlan(profile, input.context || {});
+    const trend = weightTrend(input.weighIns || [], profile);
+    const adherence = adherenceAnalytics(input.logs || [], currentPlan);
+    const plateau = plateauDetection(input.weighIns || [], profile, adherence);
+    const adjustment = adaptiveCalorieAdjustment(profile, currentPlan, trend, adherence, input.options || {});
+    const measurements = measurementTrend(input.measurements || []);
+    const photos = normalizeProgressPhotos(input.photos || []);
+    const coach = coachingExplanation(profile, trend, adherence, adjustment, plateau);
+    return {
+      generatedAt: new Date().toISOString(),
+      profile,
+      trend,
+      adherence,
+      plateau,
+      adjustment,
+      measurements,
+      photos,
+      coach
+    };
+  }
+
   return {
     ACTIVITY_PROFILES,
     DEFAULT_MEALS,
@@ -475,6 +740,19 @@
     mealSuggestion,
     normalizePrepPlan,
     groceryList,
-    prepSummary
+    prepSummary,
+    toDateKey,
+    normalizeWeighIns,
+    weeklyWeightAverages,
+    weightTrend,
+    normalizeDailyLogs,
+    adherenceAnalytics,
+    plateauDetection,
+    adaptiveCalorieAdjustment,
+    normalizeMeasurements,
+    measurementTrend,
+    normalizeProgressPhotos,
+    coachingExplanation,
+    buildWeeklyNutritionReview
   };
 });
