@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.1.1 — Life Orchestrator Bootstrap
+
+- Added the non-invasive `window.IronLife` orchestration bootstrap.
+- Added immutable metadata, configuration defaults, and lifecycle controls.
+- Added environment detection, dependency discovery, runtime validation, and health reporting.
+- Added browser and CommonJS compatibility with dedicated bootstrap regression tests.
+- Registered the module in both application shells and the service-worker cache.
+
 ## 5.5.0 — Personal Knowledge Engine
 
 - Added personal baseline modeling and data-quality scoring.

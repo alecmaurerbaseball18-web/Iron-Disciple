@@ -15,6 +15,8 @@ const sw=read('service-worker.js');
 const cached=[...sw.matchAll(/["']\.\/([^"']+)["']/g)].map(m=>m[1]).filter(Boolean);
 cached.forEach(p=>assert(exists(p),`service-worker.js caches missing file: ${p}`));
 const active=new Set([...indexRefs,...errorRefs]);
+const cacheSet=new Set(cached);
+active.forEach(p=>assert(cacheSet.has(p),`Active browser script is not precached: ${p}`));
 const moduleDir=path.join(root,'src/modules');
 const moduleFiles=fs.readdirSync(moduleDir).filter(x=>x.endsWith('.js')).map(x=>`src/modules/${x}`);
 moduleFiles.forEach(p=>assert(active.has(p),`Unreferenced production module: ${p}`));
