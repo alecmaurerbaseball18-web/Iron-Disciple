@@ -1210,10 +1210,10 @@ EVENTS: Object.freeze({
     ERROR_OCCURRED: "system:error",
     WARNING_OCCURRED: "system:warning",
     PERFORMANCE_WARNING: "system:performanceWarning"      
- }),       
-        MISSION_PHASE: MISSION_PHASE,
-
-        GOAL_STATUS: GOAL_STATUS,
+    }),       
+        
+    MISSION_PHASE: MISSION_PHASE,
+    GOAL_STATUS: GOAL_STATUS,
         GOAL_TYPE: GOAL_TYPE,
         GOAL_HORIZON: GOAL_HORIZON,
 
