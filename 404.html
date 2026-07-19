@@ -315,9 +315,19 @@
               <label>Cost $<input name="cost" type="number" min="0" step="0.01"></label><label>Prep minutes<input name="prepMinutes" type="number" min="0"></label>
               <label class="span-2">Tags<input name="tags" placeholder="high-protein, quick, recovery"></label>
               <label class="span-2">Equipment<input name="equipment" placeholder="microwave, air-fryer"></label>
+              <label class="span-2">Ingredients<textarea name="ingredients" placeholder="Ground beef | 8 | oz | Meat | 2.35&#10;Cooked rice | 1.25 | cup | Grains | 0.55"></textarea></label>
               <button class="primary-btn span-2">Save Meal</button>
             </form>
           </div>
+
+          <section class="section-block grocery-intelligence-section">
+            <div class="section-head"><div><span class="kicker">GROCERY INTELLIGENCE</span><h3>Weekly Meal Prep & Shopping</h3><p>Build a batch plan, subtract pantry inventory, and estimate the real shopping cost.</p></div><button id="clearPrepPlan" class="text-btn" type="button">Clear plan</button></div>
+            <div id="prepSummaryMetrics" class="metric-grid compact-grid"></div>
+            <div class="grocery-intelligence-grid">
+              <section><h4>Meal Prep Plan</h4><div id="nutritionPrepPlan" class="prep-plan-list"></div></section>
+              <section><h4>Smart Grocery List</h4><div id="nutritionGroceryList" class="grocery-list"></div></section>
+            </div>
+          </section>
 
           <section class="section-block"><div class="section-head"><div><span class="kicker">TARGETS</span><h3>Body Goals</h3></div><button id="editBodyGoals" class="text-btn">Edit Targets</button></div><div id="bodyGoalGrid" class="review-grid"></div></section>
         </section>
