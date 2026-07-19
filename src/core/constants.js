@@ -1127,6 +1127,89 @@
 
         ERROR_CODE: ERROR_CODE,
         DIAGNOSTICS: DIAGNOSTICS,
+        RUNTIME_LIMITS: {
+    MAX_EVENT_LOOP_BLOCK_MS: 50,
+    MAX_RENDER_TIME_MS: 16,
+    MAX_MEMORY_WARN_MB: 200,
+    MAX_MEMORY_CRITICAL_MB: 350,
+    MAX_STATE_HISTORY: 100,
+    MAX_BACKGROUND_TASKS: 10,
+    MAX_CONCURRENT_AI_TASKS: 3,
+    MAX_CACHE_ITEMS: 500,
+    CACHE_TTL_MS: 300000,
+    AUTOSAVE_INTERVAL_MS: 30000,
+    HEARTBEAT_INTERVAL_MS: 10000
+},
+    FEATURE_FLAGS: Object.freeze({
+EVENTS: Object.freeze({
+
+    /* Application */
+    APP_INITIALIZED: "app:initialized",
+    APP_READY: "app:ready",
+    APP_SHUTDOWN: "app:shutdown",
+
+    /* Navigation */
+    VIEW_CHANGED: "view:changed",
+    TAB_CHANGED: "tab:changed",
+    MODAL_OPENED: "modal:opened",
+    MODAL_CLOSED: "modal:closed",
+
+    /* Storage */
+    STORAGE_UPDATED: "storage:updated",
+    STORAGE_CLEARED: "storage:cleared",
+
+    /* Missions */
+    MISSION_CREATED: "mission:created",
+    MISSION_UPDATED: "mission:updated",
+    MISSION_COMPLETED: "mission:completed",
+
+    /* Training */
+    WORKOUT_STARTED: "training:started",
+    WORKOUT_COMPLETED: "training:completed",
+
+    /* Nutrition */
+    MEAL_LOGGED: "nutrition:mealLogged",
+    WEIGHT_UPDATED: "nutrition:weightUpdated",
+
+    /* AI */
+    AI_RESPONSE: "ai:response",
+    AI_ERROR: "ai:error",
+
+    /* System */
+    ERROR_OCCURRED: "system:error",
+    WARNING_OCCURRED: "system:warning",
+    PERFORMANCE_WARNING: "system:performanceWarning"
+
+}),
+    // Core
+    AI_COACH: true,
+    MISSION_CONTROL: true,
+    TRAINING_SYSTEM: true,
+    NUTRITION_SYSTEM: true,
+    KNOWLEDGE_ENGINE: true,
+    LIFE_ORCHESTRATOR: true,
+    PREDICTIVE_ANALYTICS: true,
+
+    // UI
+    ENABLE_ANIMATIONS: true,
+    ENABLE_SOUND_EFFECTS: false,
+    ENABLE_HAPTIC_FEEDBACK: true,
+    ENABLE_SPLASH_SCREEN: true,
+    ENABLE_DEV_CONSOLE: true,
+
+    // Performance
+    ENABLE_BACKGROUND_SYNC: true,
+    ENABLE_CACHE: true,
+    ENABLE_PREFETCH: true,
+    ENABLE_PERFORMANCE_MONITOR: true,
+
+    // Experimental
+    ENABLE_EXPERIMENTAL_UI: false,
+    ENABLE_BETA_FEATURES: false,
+    ENABLE_DEBUG_TOOLS: false
+
+}),
+        
         MISSION_PHASE: MISSION_PHASE,
 
         GOAL_STATUS: GOAL_STATUS,
