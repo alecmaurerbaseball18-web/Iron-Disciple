@@ -1,0 +1,16 @@
+const assert=require('assert');
+const N=require('../src/modules/nutrition-system.js');
+const library=N.seedMeals([]);
+assert(library.length>=6,'seeded meal library should contain professional starter meals');
+const meal=N.normalizeMeal({name:'Test Plate',calories:'500',protein:'40',tags:'quick, high-protein',cost:'3.50'});
+assert.strictEqual(meal.protein,40);
+assert.deepStrictEqual(meal.tags,['quick','high-protein']);
+const totals=N.mealTotals([{meal,quantity:2}]);
+assert.strictEqual(totals.calories,1000);
+assert.strictEqual(totals.protein,80);
+const targets={calories:2200,protein:180,carbs:220,fat:70,fiber:30,water:120};
+const ranked=N.rankMeals(library,{calories:1400,protein:90,carbs:120,fat:45,fiber:15},targets,{trainingDay:true,maxPrepMinutes:10});
+assert(ranked.length===library.length);
+assert(ranked[0].matchScore>=ranked[ranked.length-1].matchScore);
+assert(N.mealSuggestion({},targets,library).name);
+console.log('Nutrition meal library tests passed');

@@ -294,6 +294,31 @@
               <button class="primary-btn span-2">Recalculate Targets</button>
             </form>
           </section>
+
+          <section class="section-block nutrition-library-section">
+            <div class="section-head"><div><span class="kicker">MEAL INTELLIGENCE</span><h3>Smart Meal Library</h3><p>Rank meals against today's remaining targets, available time, and cost.</p></div><span id="mealLogTotals" class="status-pill">0 meals</span></div>
+            <div class="nutrition-library-toolbar"><input id="mealSearch" class="search-input" placeholder="Search meals, tags, or equipment"><select id="mealFilter"><option value="all">All meals</option><option value="favorites">Favorites</option><option value="high-protein">High protein</option><option value="quick">Quick</option><option value="performance">Performance</option><option value="recovery">Recovery</option><option value="travel">Travel</option></select></div>
+            <div id="nutritionMealLibrary" class="meal-library-grid"></div>
+          </section>
+
+          <div class="nutrition-command-grid">
+            <section class="section-block nutrition-command-card">
+              <div class="section-head"><div><span class="kicker">TODAY'S MEALS</span><h3>Meal Log</h3></div></div>
+              <div id="nutritionMealLog" class="meal-log-list"></div>
+            </section>
+            <form id="nutritionMealForm" class="form-card two-col">
+              <div class="form-heading span-2"><span class="kicker">CUSTOM MEAL</span><h3>Add to Library</h3><p>Save repeatable meals with nutrition, time, and cost metadata.</p></div>
+              <label class="span-2">Meal name<input name="name" required placeholder="Beef, rice & broccoli"></label>
+              <label>Serving<input name="serving" placeholder="1 plate"></label><label>Calories<input name="calories" type="number" min="0" required></label>
+              <label>Protein g<input name="protein" type="number" min="0" required></label><label>Carbs g<input name="carbs" type="number" min="0"></label>
+              <label>Fat g<input name="fat" type="number" min="0"></label><label>Fiber g<input name="fiber" type="number" min="0"></label>
+              <label>Cost $<input name="cost" type="number" min="0" step="0.01"></label><label>Prep minutes<input name="prepMinutes" type="number" min="0"></label>
+              <label class="span-2">Tags<input name="tags" placeholder="high-protein, quick, recovery"></label>
+              <label class="span-2">Equipment<input name="equipment" placeholder="microwave, air-fryer"></label>
+              <button class="primary-btn span-2">Save Meal</button>
+            </form>
+          </div>
+
           <section class="section-block"><div class="section-head"><div><span class="kicker">TARGETS</span><h3>Body Goals</h3></div><button id="editBodyGoals" class="text-btn">Edit Targets</button></div><div id="bodyGoalGrid" class="review-grid"></div></section>
         </section>
 
