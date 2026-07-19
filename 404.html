@@ -59,6 +59,46 @@
 
         <section class="metric-grid" id="todayMetrics"></section>
 
+        <section class="mission-control-grid" id="missionControlPanel" aria-label="Mission Control">
+          <article class="command-card mission-control-primary">
+            <div class="section-head compact"><div><span class="kicker">COMMAND BRIEF</span><h3>Next Best Action</h3></div><span class="mission-status" id="missionControlStatus">Analyzing</span></div>
+            <h2 id="missionControlNext">Build today’s plan.</h2>
+            <p id="missionControlReason">Mission Control will identify the highest-leverage action from your current goals and schedule.</p>
+            <div class="button-row mission-control-actions">
+              <button class="primary-btn" id="missionControlExecute" type="button">Open action</button>
+              <button class="secondary-btn" id="missionControlRefresh" type="button">Refresh brief</button>
+            </div>
+          </article>
+          <article class="command-card">
+            <div class="section-head compact"><div><span class="kicker">READINESS</span><h3>Capacity Signal</h3></div><strong id="missionReadinessScore">--</strong></div>
+            <div class="mission-readiness-bar"><i id="missionReadinessBar"></i></div>
+            <p id="missionReadinessGuidance">Log sleep, hydration, nutrition, and training status to improve guidance.</p>
+          </article>
+          <article class="command-card">
+            <div class="section-head compact"><div><span class="kicker">RUNWAY</span><h3>Goal Pressure</h3></div><button class="text-btn" data-nav="mission">Review</button></div>
+            <div id="missionGoalRunway" class="mission-runway"></div>
+          </article>
+          <article class="command-card">
+            <div class="section-head compact"><div><span class="kicker">SCHEDULE</span><h3>Current Rhythm</h3></div><button class="text-btn" data-nav="execute">Open</button></div>
+            <div id="missionScheduleSignal" class="mission-schedule-signal"></div>
+          </article>
+          <article class="command-card mission-execution-card">
+            <div class="section-head compact"><div><span class="kicker">EXECUTION</span><h3>Momentum & Forecast</h3></div><div class="mission-signal-pair"><span><strong id="missionMomentumScore">0</strong><small id="missionMomentumLabel">Stalled</small></span><span><strong id="missionForecastValue">0%</strong><small id="missionForecastLabel">At risk</small></span></div></div>
+            <div class="mission-execution-columns">
+              <div><h4>Blocker Radar</h4><div id="missionBlockers" class="mission-blockers"></div></div>
+              <div><h4>Three-Step Command Plan</h4><div id="missionCommandPlan" class="mission-command-plan"></div></div>
+            </div>
+          </article>
+          <article class="command-card mission-closeout-card">
+            <div class="section-head compact"><div><span class="kicker">DAILY CLOSEOUT</span><h3>Close Today. Launch Tomorrow.</h3></div><div class="mission-closeout-score"><strong id="missionCloseoutProgress">0%</strong><span id="missionCloseoutStatus">Still open</span></div></div>
+            <p id="missionCloseoutGuidance" class="mission-closeout-guidance">Mission Control will identify what must be settled before the day is closed.</p>
+            <div class="mission-closeout-columns">
+              <div><h4>Carryover Decisions</h4><div id="missionCarryover" class="mission-carryover"></div></div>
+              <div class="mission-tomorrow-launch"><span class="kicker">FIRST MOVE</span><h4 id="missionTomorrowTitle">Set tomorrow’s Big Three</h4><p id="missionTomorrowSource">Planning</p><button class="primary-btn" id="missionTomorrowOpen" data-mission-view="execute" type="button">Prepare tomorrow</button></div>
+            </div>
+          </article>
+        </section>
+
         <section class="section-block">
           <div class="section-head"><div><span class="kicker">ALIGNMENT</span><h3>Mission Systems</h3></div><button id="alignmentExplain" class="text-btn">How it works</button></div>
           <div id="systemProgress" class="system-progress"></div>
@@ -403,5 +443,7 @@
   <script src="src/training-phase25.js"></script>
   <script src="src/modules/training-library-pro.js"></script>
   <script src="src/training-phase26.js"></script>
+  <script src="src/modules/mission-control-v3.js"></script>
+  <script src="src/phase3-mission-control.js"></script>
 </body>
 </html>
