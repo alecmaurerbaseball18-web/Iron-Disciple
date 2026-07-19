@@ -74,7 +74,24 @@
         RULE_SCHEMA_VERSION: "1.0.0",
         DIAGNOSTICS_SCHEMA_VERSION: "1.0.0"
     };
-
+    /**
+     * Global diagnostics configuration.
+     *
+     * These values are consumed by every subsystem that performs
+     * logging, health checks, profiling, or performance monitoring.
+     */
+    var DIAGNOSTICS = {
+        ENABLED: true,
+        LOG_LEVEL: "INFO",
+        PERFORMANCE_MONITORING: true,
+        HEALTH_CHECKS: true,
+        ERROR_REPORTING: true,
+        TRACE_EXECUTION: false,
+        MAX_LOG_ENTRIES: 1000,
+        MAX_ERROR_HISTORY: 250,
+        SLOW_OPERATION_THRESHOLD_MS: 100,
+        STORAGE_WARNING_PERCENT: 80
+    };
     /**
      * Engine operating modes.
      */
@@ -1067,6 +1084,7 @@
         ENGINE_STATUS: ENGINE_STATUS,
         MISSION_STATUS: MISSION_STATUS,
 
+        
         CATEGORY: CATEGORY,
         CATEGORY_ALIASES: CATEGORY_ALIASES,
 
@@ -1108,7 +1126,7 @@
         DIAGNOSTIC_EVENT: DIAGNOSTIC_EVENT,
 
         ERROR_CODE: ERROR_CODE,
-
+        DIAGNOSTICS: DIAGNOSTICS,
         MISSION_PHASE: MISSION_PHASE,
 
         GOAL_STATUS: GOAL_STATUS,
