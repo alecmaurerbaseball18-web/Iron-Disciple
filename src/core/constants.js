@@ -1210,8 +1210,6 @@ EVENTS: Object.freeze({
     ERROR_OCCURRED: "system:error",
     WARNING_OCCURRED: "system:warning",
     PERFORMANCE_WARNING: "system:performanceWarning"
-
-}),
         
         MISSION_PHASE: MISSION_PHASE,
 
