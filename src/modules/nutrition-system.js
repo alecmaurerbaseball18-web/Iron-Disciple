@@ -710,6 +710,232 @@
     };
   }
 
+
+  function normalizeHabits(entries = []) {
+    const keys = ['water', 'protein', 'calories', 'fiber', 'mealPrep', 'sleep'];
+    return (Array.isArray(entries) ? entries : []).map((entry) => {
+      const normalized = { date: toDateKey(entry.date || entry.timestamp) };
+      keys.forEach((key) => { normalized[key] = Boolean(entry[key]); });
+      return normalized;
+    }).filter((entry) => entry.date).sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  function habitStreaks(entries = []) {
+    const normalized = normalizeHabits(entries);
+    const keys = ['water', 'protein', 'calories', 'fiber', 'mealPrep', 'sleep'];
+    const streaks = {};
+    keys.forEach((key) => {
+      let current = 0;
+      let best = 0;
+      normalized.forEach((entry) => {
+        if (entry[key]) {
+          current += 1;
+          best = Math.max(best, current);
+        } else current = 0;
+      });
+      streaks[key] = { current, best };
+    });
+    const completion = normalized.length
+      ? Math.round(normalized.reduce((sum, entry) => sum + keys.filter((key) => entry[key]).length / keys.length * 100, 0) / normalized.length)
+      : 0;
+    return { days: normalized.length, completion, streaks };
+  }
+
+  function smartAlerts(input = {}) {
+    const plan = input.plan || {};
+    const log = input.log || {};
+    const context = normalizeContext(input.context || {});
+    const prep = input.prep || {};
+    const recentLogs = normalizeDailyLogs(input.recentLogs || []);
+    const alerts = [];
+    const proteinRemaining = Math.max(0, (Number(plan.protein) || 0) - (Number(log.protein) || 0));
+    const waterRatio = (Number(plan.water) || 0) ? (Number(log.water) || 0) / Number(plan.water) : 1;
+    if (proteinRemaining >= 60) alerts.push({ severity: 'high', type: 'protein', title: 'Protein deficit exceeds 60 g', detail: `${round(proteinRemaining, 5)} g protein remains today.` });
+    if (waterRatio < 0.5) alerts.push({ severity: 'high', type: 'hydration', title: 'Hydration below 50%', detail: `${Math.round(waterRatio * 100)}% of the water target is complete.` });
+    if (prep.tomorrowRequired && !prep.tomorrowComplete) alerts.push({ severity: 'medium', type: 'meal-prep', title: 'Tomorrow meal prep is incomplete', detail: 'Prepare or schedule tomorrow’s primary meals before the day ends.' });
+    if (context.eventDay || context.activityType === 'tournament') alerts.push({ severity: 'medium', type: 'event', title: 'Tournament fueling is active', detail: 'Confirm fluids, electrolytes, and portable carbohydrate sources.' });
+    const lowCalorieDays = recentLogs.slice(-3).filter((entry) => {
+      const target = Number(entry.target.calories || plan.calories) || 0;
+      return target > 0 && entry.calories < target * 0.8;
+    }).length;
+    if (lowCalorieDays >= 3) alerts.push({ severity: 'high', type: 'energy', title: 'Calories too low for three consecutive days', detail: 'Increase intake or reduce the planned deficit to protect recovery and performance.' });
+    if (Number(input.recoveryScore) > 0 && Number(input.recoveryScore) < 55) alerts.push({ severity: 'medium', type: 'recovery', title: 'Recovery score is falling', detail: 'Prioritize sleep, hydration, and post-training nutrition.' });
+    return alerts.sort((a, b) => ({ high: 3, medium: 2, low: 1 }[b.severity] - { high: 3, medium: 2, low: 1 }[a.severity]));
+  }
+
+  function pearsonCorrelation(xs = [], ys = []) {
+    const length = Math.min(xs.length, ys.length);
+    if (length < 3) return 0;
+    const x = xs.slice(0, length).map(Number);
+    const y = ys.slice(0, length).map(Number);
+    const mx = average(x);
+    const my = average(y);
+    let numerator = 0;
+    let dx = 0;
+    let dy = 0;
+    for (let i = 0; i < length; i += 1) {
+      const a = x[i] - mx;
+      const b = y[i] - my;
+      numerator += a * b;
+      dx += a * a;
+      dy += b * b;
+    }
+    return dx && dy ? numerator / Math.sqrt(dx * dy) : 0;
+  }
+
+  function performanceCorrelations(entries = []) {
+    const rows = (Array.isArray(entries) ? entries : []).map((entry) => ({
+      protein: clamp(entry.proteinAdherence || entry.protein || 0, 0, 100),
+      hydration: clamp(entry.hydrationAdherence || entry.hydration || 0, 0, 100),
+      calories: clamp(entry.calorieAdherence || entry.calories || 0, 0, 100),
+      sleep: clamp(entry.sleepScore || entry.sleep || 0, 0, 100),
+      mealTiming: clamp(entry.mealTiming || 0, 0, 100),
+      recovery: clamp(entry.recoveryScore || entry.recovery || 0, 0, 100),
+      readiness: clamp(entry.readinessScore || entry.readiness || 0, 0, 100),
+      performance: clamp(entry.performanceScore || entry.workoutVolume || 0, 0, 100000)
+    }));
+    const outcomes = ['recovery', 'readiness', 'performance'];
+    const habits = ['protein', 'hydration', 'calories', 'sleep', 'mealTiming'];
+    const correlations = {};
+    habits.forEach((habit) => {
+      correlations[habit] = {};
+      outcomes.forEach((outcome) => {
+        const value = pearsonCorrelation(rows.map((row) => row[habit]), rows.map((row) => row[outcome]));
+        correlations[habit][outcome] = round(value, 0.01);
+      });
+    });
+    const strongest = [];
+    habits.forEach((habit) => outcomes.forEach((outcome) => strongest.push({ habit, outcome, correlation: correlations[habit][outcome] })));
+    strongest.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
+    return { sampleSize: rows.length, correlations, strongest: strongest.slice(0, 5), reliable: rows.length >= 8 };
+  }
+
+  function bodyCompositionForecast(input = {}) {
+    const profile = normalizeProfile(input.profile || {});
+    const review = input.review || buildWeeklyNutritionReview(input);
+    const adherenceFactor = clamp((review.adherence?.score || 70) / 100, 0.35, 1.05);
+    const weeklyChangePct = Number(review.trend?.weeklyChangePct);
+    const selectedPct = profile.mode === 'cut' ? -profile.weeklyChangePct : profile.mode === 'gain' ? profile.weeklyChangePct : 0;
+    const effectivePct = Number.isFinite(weeklyChangePct) && review.trend?.status !== 'insufficient-data' ? weeklyChangePct : selectedPct * adherenceFactor;
+    const startWeight = Number(review.trend?.latestAverage || profile.weightLb);
+    const startFatMass = startWeight * profile.bodyFat / 100;
+    const startLeanMass = startWeight - startFatMass;
+    const horizons = [30, 60, 90].map((days) => {
+      const weeks = days / 7;
+      const projectedWeight = Math.max(80, startWeight * Math.pow(1 + effectivePct / 100, weeks));
+      const change = projectedWeight - startWeight;
+      const leanShare = profile.mode === 'gain' ? 0.55 : profile.mode === 'cut' ? 0.15 : 0.35;
+      const projectedLeanMass = Math.max(0, startLeanMass + change * leanShare);
+      const projectedFatMass = Math.max(0, projectedWeight - projectedLeanMass);
+      return {
+        days,
+        weightLb: round(projectedWeight, 0.1),
+        leanMassLb: round(projectedLeanMass, 0.1),
+        fatMassLb: round(projectedFatMass, 0.1),
+        bodyFatPct: round(projectedFatMass / projectedWeight * 100, 0.1)
+      };
+    });
+    return {
+      generatedAt: new Date().toISOString(),
+      confidence: review.trend?.weeks?.length >= 4 && review.adherence?.daysLogged >= 7 ? 'high' : review.trend?.weeks?.length >= 2 ? 'medium' : 'low',
+      weeklyChangePct: round(effectivePct, 0.01),
+      assumptions: 'Projection assumes recent adherence, activity, and weight trend remain similar.',
+      horizons
+    };
+  }
+
+  function adaptiveGoalEngine(input = {}) {
+    const profile = normalizeProfile(input.profile || {});
+    const review = input.review || buildWeeklyNutritionReview(input);
+    const currentWeight = Number(review.trend?.latestAverage || profile.weightLb);
+    const goalWeight = profile.targetWeightLb;
+    const remaining = goalWeight - currentWeight;
+    let weeklyRate = currentWeight * Math.abs(Number(review.trend?.weeklyChangePct || profile.weeklyChangePct)) / 100;
+    weeklyRate = Math.max(weeklyRate, 0.1);
+    const movingTowardGoal = remaining === 0 || (remaining < 0 && Number(review.trend?.weeklyChangePct || -profile.weeklyChangePct) < 0) || (remaining > 0 && Number(review.trend?.weeklyChangePct || profile.weeklyChangePct) > 0);
+    const weeksRemaining = Math.abs(remaining) / weeklyRate;
+    const goalDate = new Date(Date.now() + weeksRemaining * 7 * 86400000);
+    const adherence = review.adherence?.score || 0;
+    const dataScore = Math.min(100, (review.trend?.weeks?.length || 0) * 15 + (review.adherence?.daysLogged || 0) * 3);
+    const confidenceScore = Math.round(adherence * 0.65 + dataScore * 0.35);
+    return {
+      currentWeight: round(currentWeight, 0.1),
+      targetWeight: goalWeight,
+      poundsRemaining: round(Math.abs(remaining), 0.1),
+      currentPaceLbPerWeek: round(weeklyRate, 0.1),
+      projectedGoalDate: goalDate.toISOString().slice(0, 10),
+      chanceOfSuccess: clamp(Math.round(confidenceScore * (movingTowardGoal ? 1 : 0.55)), 0, 100),
+      confidenceScore,
+      status: remaining === 0 ? 'complete' : movingTowardGoal ? 'on-course' : 'off-course'
+    };
+  }
+
+  function gradeFromScore(score = 0) {
+    const value = clamp(score, 0, 100);
+    return value >= 93 ? 'A' : value >= 85 ? 'B' : value >= 75 ? 'C' : value >= 65 ? 'D' : 'F';
+  }
+
+  function buildCoachReport(input = {}) {
+    const review = input.review || buildWeeklyNutritionReview(input);
+    const trainingScore = clamp(input.trainingScore == null ? 75 : input.trainingScore, 0, 100);
+    const recoveryScore = clamp(input.recoveryScore == null ? 70 : input.recoveryScore, 0, 100);
+    const hydrationScore = clamp(review.adherence?.hydrationAdherence || 0, 0, 100);
+    const nutritionScore = clamp(review.adherence?.score || 0, 0, 100);
+    const overallScore = Math.round(nutritionScore * 0.4 + trainingScore * 0.25 + recoveryScore * 0.2 + hydrationScore * 0.15);
+    const dimensions = { nutrition: nutritionScore, training: trainingScore, recovery: recoveryScore, hydration: hydrationScore };
+    const ordered = Object.entries(dimensions).sort((a, b) => b[1] - a[1]);
+    return {
+      generatedAt: new Date().toISOString(),
+      grades: {
+        nutrition: gradeFromScore(nutritionScore),
+        training: gradeFromScore(trainingScore),
+        recovery: gradeFromScore(recoveryScore),
+        hydration: gradeFromScore(hydrationScore),
+        overall: gradeFromScore(overallScore)
+      },
+      scores: { ...dimensions, overall: overallScore },
+      topWin: `${ordered[0][0]} was the strongest category at ${Math.round(ordered[0][1])}%.`,
+      biggestWeakness: `${ordered[ordered.length - 1][0]} needs the most attention at ${Math.round(ordered[ordered.length - 1][1])}%.`,
+      coachNotes: review.coach,
+      actionPlan: review.coach?.actions || []
+    };
+  }
+
+  function buildMissionStatus(input = {}) {
+    const plan = input.plan || buildDailyNutritionPlan(input.profile || {}, input.context || {});
+    const status = missionNutritionStatus(input.log || {}, plan, input.library || [], input.context || {});
+    const alerts = smartAlerts({ ...input, plan });
+    return {
+      ...status,
+      nutritionScore: compliance(input.log || {}, plan),
+      fuelReadiness: plan.energyAvailability?.level === 'low' ? 'ready' : 'attention',
+      hydrationStatus: status.waterRemaining > 24 ? 'needs-attention' : 'on-course',
+      recoveryStatus: plan.recovery?.priority || 'normal',
+      tomorrowPrep: input.prep?.tomorrowComplete ? 'complete' : input.prep?.tomorrowRequired ? 'required' : 'not-required',
+      alerts
+    };
+  }
+
+  function buildDashboard(input = {}) {
+    const plan = input.plan || buildDailyNutritionPlan(input.profile || {}, input.context || {});
+    const review = input.review || buildWeeklyNutritionReview({ ...input, currentPlan: plan });
+    const mission = buildMissionStatus({ ...input, plan });
+    const forecast = bodyCompositionForecast({ ...input, review });
+    const goal = adaptiveGoalEngine({ ...input, review });
+    const habits = habitStreaks(input.habits || []);
+    return {
+      generatedAt: new Date().toISOString(),
+      today: { plan, mission, recommendation: recommendation(input.log || {}, plan, input.context || {}) },
+      weekly: review,
+      forecast,
+      goal,
+      habits,
+      mealPrep: input.prep || {},
+      grocery: input.grocery || {},
+      alerts: mission.alerts
+    };
+  }
+
   return {
     ACTIVITY_PROFILES,
     DEFAULT_MEALS,
@@ -753,6 +979,17 @@
     measurementTrend,
     normalizeProgressPhotos,
     coachingExplanation,
-    buildWeeklyNutritionReview
+    buildWeeklyNutritionReview,
+    normalizeHabits,
+    habitStreaks,
+    smartAlerts,
+    pearsonCorrelation,
+    performanceCorrelations,
+    bodyCompositionForecast,
+    adaptiveGoalEngine,
+    gradeFromScore,
+    buildCoachReport,
+    buildMissionStatus,
+    buildDashboard
   };
 });
