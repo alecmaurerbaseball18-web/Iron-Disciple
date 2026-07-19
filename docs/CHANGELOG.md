@@ -1,3 +1,9 @@
+
+## 5.3.0 — Predictive Analytics Engine
+- Added body-composition, readiness, recovery, and training-response forecasting.
+- Added goal probability and Monte Carlo goal simulation.
+- Added injury-risk, plateau, regression, and opportunity detection.
+- Added scenario simulation and browser API `window.IronPredict`.
 # Changelog
 
 ## 5.1.0 — Human Performance Engine

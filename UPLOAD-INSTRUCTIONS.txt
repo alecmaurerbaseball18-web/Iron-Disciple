@@ -1,19 +1,20 @@
-IRON DISCIPLE OS — PHASE 5.2 DECISION ENGINE
+PHASE 5.3 — PREDICTIVE ANALYTICS ENGINE
 
-Upload every file in this patch using the same repository paths.
+Upload every file in this patch to the matching repository path and replace existing files when prompted.
 
-ADD:
-- src/modules/decision-engine.js
-- tests/decision-engine.test.js
-- docs/DECISION-ENGINE.md
+NEW FILES
+- src/modules/predictive-analytics.js
+- tests/predictive-analytics.test.js
+- docs/PREDICTIVE-ANALYTICS.md
 
-REPLACE:
+REPLACE
+- docs/CHANGELOG.md
 - index.html
 - 404.html
 - service-worker.js
-- docs/CHANGELOG.md
 
-No files should be deleted.
+DELETE
+- None
 
 Recommended commit message:
-Add Phase 5.2 Decision Engine
+Add Phase 5.3 Predictive Analytics Engine
