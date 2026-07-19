@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('assert');
+const coach=require('../src/modules/ai-coach.js');
+assert.equal(coach.VERSION,'5.4.0');
+const input={name:'Alec',performanceScore:88,readiness:90,recovery:84,sleep:{score:68},hydration:{score:72},nutrition:{score:91},consistency:94,decision:{confidence:93,mission:{primary:{title:'Upper-body strength'}},plan:{actions:['Train upper body','Add carbohydrates at dinner']},reasons:['Recovery supports training']},forecast:{goal:{probability:87,status:'likely'},body:{projections:[{days:30,weight:210}]}}};
+const morning=coach.buildMorningBrief(input);
+assert.equal(morning.primaryObjective,'Upper-body strength');
+assert(morning.watchItems.some(x=>x.toLowerCase().includes('sleep')));
+assert(morning.priorities.length>=2);
+const evening=coach.buildEveningReview({...input,completed:['Workout','Protein'],missed:['Bedtime']});
+assert.equal(evening.completed.length,2);
+const history=Array.from({length:7},(_,i)=>({...input,date:`2026-07-${10+i}`,performanceScore:80+i,recovery:75+i,consistency:85+i}));
+assert(coach.weeklyReview(history).overallScore>0);
+assert(coach.monthlyReview(history).nextMonthObjectives.length===3);
+assert(coach.goalCoach(input).probability===87);
+assert(coach.explainDecision(input.decision).plainLanguage.includes('Upper-body strength'));
+assert(coach.generateCoaching(input).morning.greeting.includes('Alec'));
+console.log('AI Coach passed:',morning.missionScore,evening.score);

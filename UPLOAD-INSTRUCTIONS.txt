@@ -1,20 +1,19 @@
-PHASE 5.3 — PREDICTIVE ANALYTICS ENGINE
+Iron Disciple OS — Phase 5.4 AI Coach Engine
 
-Upload every file in this patch to the matching repository path and replace existing files when prompted.
+Upload these files to the matching repository paths and replace existing files when prompted.
 
-NEW FILES
-- src/modules/predictive-analytics.js
-- tests/predictive-analytics.test.js
-- docs/PREDICTIVE-ANALYTICS.md
+New files:
+- src/modules/ai-coach.js
+- tests/ai-coach.test.js
+- docs/AI-COACH.md
 
-REPLACE
+Updated files:
 - docs/CHANGELOG.md
 - index.html
 - 404.html
 - service-worker.js
 
-DELETE
-- None
+No files need to be deleted.
 
 Recommended commit message:
-Add Phase 5.3 Predictive Analytics Engine
+Add Phase 5.4 AI Coach Engine

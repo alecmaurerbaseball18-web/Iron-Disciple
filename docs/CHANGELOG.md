@@ -1,3 +1,13 @@
+# Changelog
+
+## 5.4.0 — AI Coach Engine
+
+- Added structured morning briefings and evening reviews.
+- Added weekly and monthly coaching reports.
+- Added explainable decision, goal, performance, recovery, and habit coaching.
+- Integrated Human Performance, Decision, and Predictive Analytics outputs through `window.IronCoach`.
+- Added regression coverage and service-worker registration for the new production module.
+
 
 ## 5.3.0 — Predictive Analytics Engine
 - Added body-composition, readiness, recovery, and training-response forecasting.
