@@ -1,0 +1,13 @@
+(function(){'use strict';
+const N=globalThis.IronNutrition;if(!N)return;
+function ensure(){state.nutrition=state.nutrition||{};state.nutrition.schemaVersion=1;state.nutrition.profile=N.normalizeProfile(state.nutrition.profile||{weightLb:state.body?.[todayKey()]?.weight||state.bodyGoals?.weight||220,bodyFat:state.body?.[todayKey()]?.bodyFat||30,targetWeightLb:state.bodyGoals?.weight||200});state.nutrition.meals=Array.isArray(state.nutrition.meals)?state.nutrition.meals:[];}
+function context(){const b=bodyToday(),workout=state.workouts?.some(w=>w.date===todayKey()&&!w.done)||state.workout?.done===false;return {trainingDay:workout,readiness:bodyReadiness(b),eventDay:false};}
+function renderNutritionIntelligence(){ensure();const b=bodyToday(),targets=N.targets(state.nutrition.profile,context()),score=N.compliance(b,targets),rec=N.recommendation(b,targets,context()),meal=N.mealSuggestion(b,targets,state.nutrition.meals);
+ const scoreEl=$('#nutritionCompliance');if(scoreEl)scoreEl.textContent=`${score}%`;
+ const targetEl=$('#adaptiveNutritionTargets');if(targetEl)targetEl.innerHTML=[['Calories',targets.calories,'kcal'],['Protein',targets.protein,'g'],['Carbs',targets.carbs,'g'],['Fat',targets.fat,'g'],['Fiber',targets.fiber,'g'],['Water',targets.water,'oz']].map(([k,v,u])=>`<div class="metric"><span>${k}</span><strong>${v} ${u}</strong></div>`).join('');
+ const guide=$('#nutritionGuidance');if(guide)guide.innerHTML=`<strong>${esc(rec.title)}</strong><p>${esc(rec.detail)}</p><small>Suggested meal: ${esc(meal.name)} · ${meal.protein}g protein · ${meal.calories} kcal</small>`;
+ const p=state.nutrition.profile,form=$('#athleteNutritionProfile');if(form){['age','heightIn','weightLb','bodyFat','targetWeightLb','weeklyChangePct'].forEach(k=>{if(form.elements[k])form.elements[k].value=p[k]??''});['sex','mode','activity'].forEach(k=>{if(form.elements[k])form.elements[k].value=p[k]});}
+}
+function init(){ensure();renderNutritionIntelligence();const form=$('#athleteNutritionProfile');if(form)form.onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));state.nutrition.profile=N.normalizeProfile(d);state.bodyGoals={...state.bodyGoals,...N.targets(state.nutrition.profile,context())};save();renderNutritionIntelligence();};const daily=$('#nutritionForm');if(daily)daily.addEventListener('submit',()=>setTimeout(renderNutritionIntelligence,0));document.addEventListener('iron:state-saved',renderNutritionIntelligence);globalThis.IronNutritionUI={render:renderNutritionIntelligence};}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();

@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('assert');
+const N=require('../src/modules/nutrition-system.js');
+const p=N.normalizeProfile({sex:'male',age:35,heightIn:72,weightLb:220,bodyFat:30,targetWeightLb:190,mode:'cut',activity:'moderate',weeklyChangePct:.6});
+assert.equal(p.mode,'cut');
+assert.ok(N.leanMassLb(p)>150&&N.leanMassLb(p)<155);
+assert.ok(N.bmr(p)>1800&&N.bmr(p)<2100);
+const t=N.targets(p,{trainingDay:true,readiness:80});
+assert.ok(t.calories>=1800&&t.calories<=3000);
+assert.ok(t.protein>=160);
+assert.ok(t.water>=120);
+assert.ok(t.carbs>=75);
+assert.ok(N.compliance(t,t)>=99);
+const gaps=N.gaps({protein:100,water:64},t);assert.ok(gaps.some(x=>x.key==='protein'));
+assert.equal(N.recommendation({protein:80,water:t.water},t,{trainingDay:true}).type,'protein');
+assert.ok(N.mealSuggestion({},t,[]).name);
+console.log('nutrition-system tests passed');

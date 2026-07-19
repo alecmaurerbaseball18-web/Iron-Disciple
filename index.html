@@ -273,6 +273,27 @@
             <label>Fiber g<input name="fiber" type="number" min="0" placeholder="30"></label><label>Water oz<input name="water" type="number" min="0" placeholder="128"></label>
             <button class="primary-btn span-2">Save Nutrition</button>
           </form>
+
+          <section class="nutrition-command-grid">
+            <section class="section-block nutrition-command-card">
+              <div class="section-head"><div><span class="kicker">ADAPTIVE TARGETS</span><h3>Performance Prescription</h3></div><strong id="nutritionCompliance" class="nutrition-score">0%</strong></div>
+              <div id="adaptiveNutritionTargets" class="metric-grid compact-grid"></div>
+              <div id="nutritionGuidance" class="insight-card nutrition-guidance"></div>
+            </section>
+            <form id="athleteNutritionProfile" class="form-card two-col">
+              <div class="form-heading span-2"><span class="kicker">ATHLETE PROFILE</span><h3>Nutrition Engine Inputs</h3><p>Targets adapt from body composition, activity, goal mode, training demand, and readiness.</p></div>
+              <label>Sex<select name="sex"><option value="male">Male</option><option value="female">Female</option></select></label>
+              <label>Age<input name="age" type="number" min="18" max="90"></label>
+              <label>Height (in)<input name="heightIn" type="number" min="48" max="84" step="0.5"></label>
+              <label>Current weight (lb)<input name="weightLb" type="number" min="80" max="500" step="0.1"></label>
+              <label>Body fat %<input name="bodyFat" type="number" min="3" max="70" step="0.1"></label>
+              <label>Target weight (lb)<input name="targetWeightLb" type="number" min="80" max="500" step="0.1"></label>
+              <label>Goal mode<select name="mode"><option value="cut">Cut</option><option value="recomp">Recomposition</option><option value="maintain">Maintain</option><option value="gain">Gain</option></select></label>
+              <label>Activity<select name="activity"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="very-high">Very high</option></select></label>
+              <label class="span-2">Target weekly change %<input name="weeklyChangePct" type="number" min="0.1" max="1.5" step="0.1"></label>
+              <button class="primary-btn span-2">Recalculate Targets</button>
+            </form>
+          </section>
           <section class="section-block"><div class="section-head"><div><span class="kicker">TARGETS</span><h3>Body Goals</h3></div><button id="editBodyGoals" class="text-btn">Edit Targets</button></div><div id="bodyGoalGrid" class="review-grid"></div></section>
         </section>
 
@@ -443,6 +464,8 @@
   <script src="src/training-phase25.js"></script>
   <script src="src/modules/training-library-pro.js"></script>
   <script src="src/training-phase26.js"></script>
+  <script src="src/modules/nutrition-system.js"></script>
+  <script src="src/phase4-nutrition.js"></script>
   <script src="src/modules/mission-control-v3.js"></script>
   <script src="src/phase3-mission-control.js"></script>
 </body>
