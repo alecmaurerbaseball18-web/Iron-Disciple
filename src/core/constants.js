@@ -1250,6 +1250,19 @@ ENVIRONMENT: Object.freeze({
     COPYRIGHT_YEAR: "2026"
 
 }),
+
+PLATFORM: Object.freeze({
+
+    WEB: "web",
+    IOS: "ios",
+    ANDROID: "android",
+    WINDOWS: "windows",
+    MACOS: "macos",
+    LINUX: "linux",
+
+    CURRENT: "web"
+
+}),
         
 MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
