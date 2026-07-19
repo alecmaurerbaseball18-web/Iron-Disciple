@@ -1263,6 +1263,36 @@ PLATFORM: Object.freeze({
     CURRENT: "web"
 
 }),
+
+BROWSER_CAPABILITIES: Object.freeze({
+
+    LOCAL_STORAGE: "localStorage",
+    SESSION_STORAGE: "sessionStorage",
+    INDEXED_DB: "indexedDB",
+
+    SERVICE_WORKER: "serviceWorker",
+    WEB_WORKER: "webWorker",
+
+    NOTIFICATIONS: "notifications",
+    GEOLOCATION: "geolocation",
+
+    CAMERA: "camera",
+    MICROPHONE: "microphone",
+
+    WAKE_LOCK: "wakeLock",
+    SHARE_API: "share",
+
+    CLIPBOARD: "clipboard",
+
+    FULLSCREEN: "fullscreen",
+
+    VIBRATION: "vibration",
+
+    BLUETOOTH: "bluetooth",
+
+    NETWORK_INFORMATION: "networkInformation"
+
+}),
         
 MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
