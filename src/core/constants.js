@@ -1211,7 +1211,11 @@ EVENTS: Object.freeze({
     WARNING_OCCURRED: "system:warning",
     PERFORMANCE_WARNING: "system:performanceWarning"      
     }),    
-  ENVIRONMENT: Object.freeze({
+  EVENTS: Object.freeze({
+    ...
+}),
+
+ENVIRONMENT: Object.freeze({
 
     DEVELOPMENT: "development",
     TESTING: "testing",
@@ -1220,9 +1224,9 @@ EVENTS: Object.freeze({
 
     CURRENT: "development"
 
-}),      
-        
-    MISSION_PHASE: MISSION_PHASE,
+}),
+
+MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
         GOAL_TYPE: GOAL_TYPE,
         GOAL_HORIZON: GOAL_HORIZON,
