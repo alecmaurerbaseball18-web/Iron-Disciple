@@ -1,1 +1,0 @@
-export const MissionModule={name:"mission",initialize(){}};

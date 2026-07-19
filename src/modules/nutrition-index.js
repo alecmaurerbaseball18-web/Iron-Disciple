@@ -1,1 +1,0 @@
-export const NutritionModule={name:"nutrition",initialize(){}};

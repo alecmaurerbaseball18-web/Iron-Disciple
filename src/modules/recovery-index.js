@@ -1,1 +1,0 @@
-export const RecoveryModule={name:"recovery",initialize(){}};
