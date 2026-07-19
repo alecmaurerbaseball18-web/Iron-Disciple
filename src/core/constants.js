@@ -1210,7 +1210,17 @@ EVENTS: Object.freeze({
     ERROR_OCCURRED: "system:error",
     WARNING_OCCURRED: "system:warning",
     PERFORMANCE_WARNING: "system:performanceWarning"      
-    }),       
+    }),    
+  ENVIRONMENT: Object.freeze({
+
+    DEVELOPMENT: "development",
+    TESTING: "testing",
+    STAGING: "staging",
+    PRODUCTION: "production",
+
+    CURRENT: "development"
+
+}),      
         
     MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
