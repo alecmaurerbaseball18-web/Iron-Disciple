@@ -1212,8 +1212,6 @@ EVENTS: Object.freeze({
     PERFORMANCE_WARNING: "system:performanceWarning"
 
 }),
-
-}),
         
         MISSION_PHASE: MISSION_PHASE,
 
