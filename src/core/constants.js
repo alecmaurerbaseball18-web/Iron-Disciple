@@ -1223,6 +1223,18 @@ ENVIRONMENT: Object.freeze({
 
 }),
 
+ BUILD: Object.freeze({
+
+    VERSION: "1.0.0",
+    BUILD_NUMBER: 1,
+    BUILD_DATE: "2026-07-19",
+    STABLE: true,
+
+    API_LEVEL: 1,
+    COMPATIBILITY_LEVEL: 1
+
+}),
+        
 MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
         GOAL_TYPE: GOAL_TYPE,
