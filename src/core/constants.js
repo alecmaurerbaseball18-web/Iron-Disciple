@@ -1211,9 +1211,6 @@ EVENTS: Object.freeze({
     WARNING_OCCURRED: "system:warning",
     PERFORMANCE_WARNING: "system:performanceWarning"      
     }),    
-  EVENTS: Object.freeze({
-    ...
-}),
 
 ENVIRONMENT: Object.freeze({
 
