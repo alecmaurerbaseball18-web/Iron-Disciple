@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Iron Disciple">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/icon.svg">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <title>Iron Disciple OS</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">IRON DISCIPLE OS</p>
+        <h1 id="pageTitle">Today</h1>
+      </div>
+      <div class="top-actions">
+        <button id="searchOpen" class="icon-btn" aria-label="Search" title="Search (/)" aria-keyshortcuts="/">⌕</button>
+        <button id="commandOpen" class="avatar-btn" aria-label="Open system menu" title="System menu">ID</button>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="view active" data-view="today">
+        <section class="hero-card">
+          <div class="hero-copy">
+            <p class="eyebrow" id="todayDate"></p>
+            <h2 id="greeting">Become who you said you would be.</h2>
+            <p id="missionLine">Define your mission. Align the day. Execute.</p>
+            <div class="hero-actions">
+              <button class="primary-btn" data-nav="execute">Plan Today</button>
+              <button class="secondary-btn" data-nav="mission">Review Mission</button>
+            </div>
+          </div>
+          <button class="alignment-card" id="alignmentCard" aria-label="Open alignment breakdown">
+            <div class="alignment-ring" id="alignmentRing"><span id="alignmentScore">0%</span></div>
+            <span>Alignment</span>
+            <small id="alignmentLabel">Build the foundation</small>
+          </button>
+        </section>
+
+        <section class="daily-command-grid">
+          <article class="command-card focus-card">
+            <div class="section-head compact"><div><span class="kicker">FOCUS</span><h3>Today’s Big Three</h3></div><button id="editBigThree" class="text-btn">Edit</button></div>
+            <div id="bigThreeList" class="stack"></div>
+          </article>
+          <article class="command-card agenda-card">
+            <div class="section-head compact"><div><span class="kicker">AGENDA</span><h3>Today’s Rhythm</h3></div><button class="text-btn" data-nav="execute">Open</button></div>
+            <div id="agendaPreview" class="timeline"></div>
+          </article>
+        </section>
+
+        <section class="metric-grid" id="todayMetrics"></section>
+
+        <section class="section-block">
+          <div class="section-head"><div><span class="kicker">ALIGNMENT</span><h3>Mission Systems</h3></div><button id="alignmentExplain" class="text-btn">How it works</button></div>
+          <div id="systemProgress" class="system-progress"></div>
+        </section>
+
+        <section class="dashboard-grid">
+          <section class="section-block flush">
+            <div class="section-head"><div><span class="kicker">OBJECTIVES</span><h3>Current Priorities</h3></div><button class="text-btn" data-nav="mission">View mission</button></div>
+            <div id="priorityPreview" class="card-list"></div>
+          </section>
+          <section class="section-block flush">
+            <div class="section-head"><div><span class="kicker">BUILD</span><h3>Active Projects</h3></div><button class="text-btn" data-nav="build">View all</button></div>
+            <div id="projectPreview" class="card-list"></div>
+          </section>
+        </section>
+
+        <section class="section-block">
+          <div class="section-head"><div><span class="kicker">INTELLIGENCE</span><h3>What deserves attention</h3></div></div>
+          <div id="insights" class="insight-card"></div>
+        </section>
+      </section>
+
+      <section class="view" data-view="mission">
+        <section class="page-intro mission-intro">
+          <div><span class="kicker">DIRECTION</span><h2>Mission</h2><p>Define who you are becoming, where you are going, and what this season demands.</p></div>
+          <div class="mission-score"><strong id="missionCompleteness">0%</strong><span>Mission clarity</span></div>
+        </section>
+
+        <div class="mission-tabs" role="tablist">
+          <button class="mission-tab active" data-mission-tab="identity">Identity</button>
+          <button class="mission-tab" data-mission-tab="vision">Vision</button>
+          <button class="mission-tab" data-mission-tab="goals">Goals</button>
+          <button class="mission-tab" data-mission-tab="review">Review</button>
+        </div>
+
+        <section class="mission-panel active" data-mission-panel="identity">
+          <form id="identityForm" class="form-card">
+            <div class="form-heading"><span class="kicker">WHO YOU ARE</span><h3>Identity & Mission</h3><p>Write statements strong enough to guide decisions when motivation is absent.</p></div>
+            <label>Identity statement<textarea name="identity" placeholder="I am a disciplined husband, father, leader, athlete, and builder."></textarea></label>
+            <label>Mission statement<textarea name="mission" placeholder="Build a strong, intentional life through disciplined execution."></textarea></label>
+            <label>Motto<input name="motto" placeholder="Become who you said you would be."></label>
+            <button class="primary-btn" type="submit">Save Identity</button>
+          </form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">VALUES</span><h3>Core Values</h3></div><button id="addValue" class="text-btn">Add value</button></div><div id="valueList" class="value-grid"></div></section>
+        </section>
+
+        <section class="mission-panel" data-mission-panel="vision">
+          <form id="visionForm" class="form-card">
+            <div class="form-heading"><span class="kicker">WHERE YOU ARE GOING</span><h3>Vision</h3><p>Describe the life you are deliberately constructing.</p></div>
+            <label>Three-year vision<textarea name="vision3" placeholder="What does a strong life look like three years from now?"></textarea></label>
+            <label>One-year picture<textarea name="vision1" placeholder="What must be true one year from now?"></textarea></label>
+            <label>This season<textarea name="season" placeholder="What matters most in the current season?"></textarea></label>
+            <button class="primary-btn" type="submit">Save Vision</button>
+          </form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">LIFE AREAS</span><h3>Areas of Stewardship</h3></div></div><div id="lifeAreaGrid" class="life-area-grid"></div></section>
+        </section>
+
+        <section class="mission-panel" data-mission-panel="goals">
+          <section class="goal-toolbar">
+            <div><span class="kicker">OUTCOMES</span><h3>Goal Architecture</h3><p>Annual direction becomes quarterly focus, monthly objectives, and today’s work.</p></div>
+            <button id="addGoal" class="primary-btn">Add Goal</button>
+          </section>
+          <div id="goalBoard" class="goal-board"></div>
+        </section>
+
+        <section class="mission-panel" data-mission-panel="review">
+          <section class="review-hero"><span class="kicker">MISSION REVIEW</span><h3 id="reviewHeadline">Your mission needs definition.</h3><p id="reviewNarrative"></p></section>
+          <div id="missionReviewGrid" class="review-grid"></div>
+          <form id="missionReviewForm" class="form-card">
+            <label>What is most important now?<textarea name="priority"></textarea></label>
+            <label>What should be eliminated or deferred?<textarea name="eliminate"></textarea></label>
+            <label>Commitment for this week<textarea name="commitment"></textarea></label>
+            <button class="primary-btn">Save Mission Review</button>
+          </form>
+        </section>
+      </section>
+
+      <section class="view" data-view="execute">
+        <section class="page-intro execute-intro">
+          <div><span class="kicker">ACTION</span><h2>Execute</h2><p>Turn mission into a deliberate day, protect focus, and close every loop.</p></div>
+          <div class="execution-score"><strong id="executionScore">0%</strong><span>Daily execution</span></div>
+        </section>
+
+        <div class="mission-tabs execute-tabs" role="tablist">
+          <button class="execute-tab active" data-execute-tab="today">Today</button>
+          <button class="execute-tab" data-execute-tab="tasks">Tasks</button>
+          <button class="execute-tab" data-execute-tab="routines">Routines</button>
+          <button class="execute-tab" data-execute-tab="reviews">Reviews</button>
+          <button class="execute-tab" data-execute-tab="insights">Insights</button>
+        </div>
+
+        <section class="execute-panel active" data-execute-panel="today">
+          <section class="execution-hero">
+            <div><span class="kicker">NEXT ACTION</span><h3 id="nextActionTitle">Define today’s first meaningful action.</h3><p id="nextActionDetail">Your next action is selected from the Big Three, scheduled blocks, and priority tasks.</p></div>
+            <button id="startFocus" class="focus-launch"><strong id="focusClock">25:00</strong><span>Start Focus</span></button>
+          </section>
+          <div class="metric-grid" id="executeMetrics"></div>
+          <section class="daily-command-grid">
+            <article class="command-card focus-card"><div class="section-head compact"><div><span class="kicker">OUTCOMES</span><h3>Today’s Big Three</h3></div><button id="executeEditBigThree" class="text-btn">Edit</button></div><div id="executeBigThree" class="stack"></div></article>
+            <article class="command-card"><div class="section-head compact"><div><span class="kicker">QUEUE</span><h3>Priority Tasks</h3></div><button id="quickAddTask" class="text-btn">Add</button></div><div id="todayTaskQueue" class="stack"></div></article>
+          </section>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">TIME BLOCKS</span><h3>Today’s Agenda</h3></div><button id="addTimeBlock" class="text-btn">Add</button></div><div id="timeBlockList" class="timeline editable"></div></section>
+        </section>
+
+        <section class="execute-panel" data-execute-panel="tasks">
+          <section class="goal-toolbar"><div><span class="kicker">TASK ENGINE</span><h3>Action Inventory</h3><p>Every task needs a clear outcome, priority, and next decision.</p></div><button id="addTask" class="primary-btn">New Task</button></section>
+          <div class="filter-row task-filters"><button class="chip active" data-task-filter="open">Open</button><button class="chip" data-task-filter="today">Today</button><button class="chip" data-task-filter="high">High Priority</button><button class="chip" data-task-filter="done">Completed</button><button class="chip" data-task-filter="all">All</button></div>
+          <div id="taskList" class="task-list"></div>
+        </section>
+
+        <section class="execute-panel" data-execute-panel="routines">
+          <div class="dashboard-grid">
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">MORNING</span><h3>Start With Intention</h3></div><button class="text-btn" data-add-routine="morning">Add</button></div><div id="morningRoutineList" class="stack"></div></section>
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">EVENING</span><h3>Close the Loop</h3></div><button class="text-btn" data-add-routine="evening">Add</button></div><div id="eveningRoutineList" class="stack"></div></section>
+          </div>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">HABITS</span><h3>Daily Non-negotiables</h3></div><button id="addHabit" class="text-btn">Add</button></div><div id="habitList" class="habit-grid"></div></section>
+        </section>
+
+        <section class="execute-panel" data-execute-panel="reviews">
+          <div class="review-switch"><button class="active" data-review-type="daily">Daily</button><button data-review-type="weekly">Weekly</button><button data-review-type="monthly">Monthly</button></div>
+          <form id="reviewForm" class="form-card review-form" data-review-form="daily"><div class="form-heading"><span class="kicker">DAILY REVIEW</span><h3>End the Day Deliberately</h3></div><label>What moved forward?<textarea name="wins" required></textarea></label><label>What created friction?<textarea name="friction"></textarea></label><label>What needs attention tomorrow?<textarea name="tomorrow"></textarea></label><label>Day rating <output id="dayRatingOutput">7</output>/10<input id="dayRating" name="rating" type="range" min="1" max="10" value="7"></label><button class="primary-btn">Save Daily Review</button></form>
+          <form id="weeklyReviewForm" class="form-card review-form hidden" data-review-form="weekly"><div class="form-heading"><span class="kicker">WEEKLY REVIEW</span><h3>Inspect the System</h3></div><label>Biggest wins<textarea name="wins" required></textarea></label><label>Where did I drift?<textarea name="drift"></textarea></label><label>What must happen next week?<textarea name="next"></textarea></label><label>One thing to eliminate<textarea name="eliminate"></textarea></label><button class="primary-btn">Save Weekly Review</button></form>
+          <form id="monthlyReviewForm" class="form-card review-form hidden" data-review-form="monthly"><div class="form-heading"><span class="kicker">MONTHLY REVIEW</span><h3>Recalibrate Direction</h3></div><label>Meaningful progress<textarea name="progress" required></textarea></label><label>What did this month teach me?<textarea name="lesson"></textarea></label><label>Next month’s defining objective<textarea name="objective"></textarea></label><label>What will I stop doing?<textarea name="stop"></textarea></label><button class="primary-btn">Save Monthly Review</button></form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">HISTORY</span><h3>Review Log</h3></div></div><div id="reviewHistory" class="card-list"></div></section>
+        </section>
+
+        <section class="execute-panel" data-execute-panel="insights">
+          <section class="review-hero"><span class="kicker">EXECUTION INTELLIGENCE</span><h3 id="executionHeadline">Build evidence of discipline.</h3><p id="executionNarrative"></p></section>
+          <div id="executionInsightGrid" class="review-grid"></div>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">FOCUS HISTORY</span><h3>Recent Sessions</h3></div></div><div id="focusHistory" class="card-list"></div></section>
+        </section>
+      </section>
+
+      <section class="view" data-view="body">
+        <section class="page-intro body-intro">
+          <div><span class="kicker">CAPABILITY</span><h2>Body</h2><p>Train with purpose, recover intelligently, and measure the physical system.</p></div>
+          <div class="body-score"><strong id="bodyScore">0%</strong><span>Body readiness</span></div>
+        </section>
+        <div class="mission-tabs body-tabs" role="tablist">
+          <button class="body-tab active" data-body-tab="overview">Overview</button>
+          <button class="body-tab" data-body-tab="training">Training</button>
+          <button class="body-tab" data-body-tab="nutrition">Nutrition</button>
+          <button class="body-tab" data-body-tab="recovery">Recovery</button>
+          <button class="body-tab" data-body-tab="progress">Progress</button>
+        </div>
+
+        <section class="body-panel active" data-body-panel="overview">
+          <section class="body-hero">
+            <div><span class="kicker">TODAY</span><h3 id="bodyHeadline">Build a capable body.</h3><p id="bodyNarrative">Log the inputs that determine performance.</p></div>
+            <div class="readiness-ring" id="readinessRing"><strong id="readinessScore">0</strong><span>Readiness</span></div>
+          </section>
+          <section class="metric-grid" id="bodyMetrics"></section>
+          <div class="dashboard-grid">
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">TRAINING</span><h3>Today’s Workout</h3></div><button class="text-btn" data-body-jump="training">Open</button></div><div id="workoutCard" class="feature-card"></div></section>
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">NUTRITION</span><h3>Daily Targets</h3></div><button class="text-btn" data-body-jump="nutrition">Log</button></div><div id="nutritionPreview" class="macro-stack"></div></section>
+          </div>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">INTELLIGENCE</span><h3>Body Guidance</h3></div></div><div id="bodyInsight" class="insight-card"></div></section>
+        </section>
+
+        <section class="body-panel" data-body-panel="training">
+          <section class="goal-toolbar"><div><span class="kicker">PROGRAMMING</span><h3>Workout Builder</h3><p>Plan sessions, record sets, and preserve progressive overload.</p></div><button id="createWorkout" class="primary-btn">New Workout</button></section>
+          <div id="workoutList" class="workout-list"></div>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">EXERCISE LIBRARY</span><h3>Movements</h3></div><button id="addExercise" class="text-btn">Add Exercise</button></div><div id="exerciseLibrary" class="exercise-grid"></div></section>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">PERSONAL RECORDS</span><h3>Strength Milestones</h3></div><button id="addPR" class="text-btn">Add PR</button></div><div id="prList" class="card-list"></div></section>
+        </section>
+
+        <section class="body-panel" data-body-panel="nutrition">
+          <form id="nutritionForm" class="form-card two-col">
+            <div class="form-heading span-2"><span class="kicker">DAILY INTAKE</span><h3>Nutrition & Hydration</h3><p>Track the targets that support body composition and performance.</p></div>
+            <label>Calories<input name="calories" type="number" min="0" placeholder="2400"></label><label>Protein g<input name="protein" type="number" min="0" placeholder="200"></label>
+            <label>Carbs g<input name="carbs" type="number" min="0" placeholder="220"></label><label>Fat g<input name="fat" type="number" min="0" placeholder="75"></label>
+            <label>Fiber g<input name="fiber" type="number" min="0" placeholder="30"></label><label>Water oz<input name="water" type="number" min="0" placeholder="128"></label>
+            <button class="primary-btn span-2">Save Nutrition</button>
+          </form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">TARGETS</span><h3>Body Goals</h3></div><button id="editBodyGoals" class="text-btn">Edit Targets</button></div><div id="bodyGoalGrid" class="review-grid"></div></section>
+        </section>
+
+        <section class="body-panel" data-body-panel="recovery">
+          <form id="recoveryForm" class="form-card two-col">
+            <div class="form-heading span-2"><span class="kicker">RECOVERY INPUTS</span><h3>Readiness Check</h3><p>Use honest data to adjust training—not emotion.</p></div>
+            <label>Sleep hours<input name="sleep" type="number" step="0.1" min="0" max="16" placeholder="7.5"></label><label>Sleep quality (1–10)<input name="sleepQuality" type="number" min="1" max="10" placeholder="8"></label>
+            <label>Energy (1–10)<input name="energy" type="number" min="1" max="10" placeholder="7"></label><label>Soreness (1–10)<input name="soreness" type="number" min="1" max="10" placeholder="3"></label>
+            <label>Stress (1–10)<input name="stress" type="number" min="1" max="10" placeholder="4"></label><label>Steps<input name="steps" type="number" min="0" placeholder="10000"></label>
+            <label class="span-2">Recovery notes<textarea name="recoveryNotes" placeholder="Pain, fatigue, mobility, or anything affecting readiness."></textarea></label>
+            <button class="primary-btn span-2">Save Recovery</button>
+          </form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">RECOVERY PLAN</span><h3>Recommended Action</h3></div></div><div id="recoveryRecommendation" class="feature-card"></div></section>
+        </section>
+
+        <section class="body-panel" data-body-panel="progress">
+          <form id="bodyForm" class="form-card two-col">
+            <div class="form-heading span-2"><span class="kicker">MEASUREMENTS</span><h3>Progress Check-in</h3><p>Trend the signal. Ignore day-to-day noise.</p></div>
+            <label>Weight lb<input name="weight" inputmode="decimal" placeholder="230"></label><label>Body fat %<input name="bodyFat" inputmode="decimal" placeholder="30"></label>
+            <label>Waist in<input name="waist" inputmode="decimal"></label><label>Chest in<input name="chest" inputmode="decimal"></label>
+            <label>Arms in<input name="arms" inputmode="decimal"></label><label>Thighs in<input name="thighs" inputmode="decimal"></label>
+            <button class="primary-btn span-2">Save Measurements</button>
+          </form>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">TREND</span><h3>Recent Check-ins</h3></div></div><div id="measurementHistory" class="measurement-chart"></div></section>
+        </section>
+      </section>
+
+      <section class="view" data-view="build">
+        <section class="page-intro build-intro">
+          <div><span class="kicker">CREATION</span><h2>Build</h2><p>Turn ideas into finished outcomes with tasks, budgets, materials, measurements, and milestones in one workspace.</p></div>
+          <div class="build-score"><strong id="buildScore">0%</strong><span>Portfolio progress</span></div>
+        </section>
+        <div class="mission-tabs build-tabs" role="tablist">
+          <button class="build-tab active" data-build-tab="portfolio">Portfolio</button>
+          <button class="build-tab" data-build-tab="workspace">Workspace</button>
+          <button class="build-tab" data-build-tab="tasks">Kanban</button>
+          <button class="build-tab" data-build-tab="money">Budget</button>
+          <button class="build-tab" data-build-tab="plan">Plan</button>
+        </div>
+
+        <section class="build-panel active" data-build-panel="portfolio">
+          <section class="goal-toolbar"><div><span class="kicker">PROJECT PORTFOLIO</span><h3>Active Builds</h3><p>Every project needs a clear finish line, next action, and owner.</p></div><button id="addProject" class="primary-btn">New Project</button></section>
+          <section class="metric-grid" id="buildMetrics"></section>
+          <div class="filter-row build-filters"><button class="chip active" data-project-filter="active">Active</button><button class="chip" data-project-filter="attention">Needs Attention</button><button class="chip" data-project-filter="complete">Complete</button><button class="chip" data-project-filter="all">All</button></div>
+          <div id="projectList" class="project-grid enhanced"></div>
+        </section>
+
+        <section class="build-panel" data-build-panel="workspace">
+          <div id="projectWorkspace" class="project-workspace"></div>
+        </section>
+
+        <section class="build-panel" data-build-panel="tasks">
+          <section class="goal-toolbar"><div><span class="kicker">KANBAN</span><h3>Project Tasks</h3><p>Move work from backlog to done without losing the next action.</p></div><button id="addProjectTask" class="primary-btn">Add Task</button></section>
+          <div id="projectKanban" class="kanban-board"></div>
+        </section>
+
+        <section class="build-panel" data-build-panel="money">
+          <section class="goal-toolbar"><div><span class="kicker">FINANCIAL CONTROL</span><h3>Budget & Shopping</h3><p>Compare planned and actual cost before the project surprises you.</p></div><div class="button-row"><button id="addExpense" class="secondary-btn">Add Expense</button><button id="addShoppingItem" class="primary-btn">Add Item</button></div></section>
+          <div id="projectBudget" class="budget-layout"></div>
+        </section>
+
+        <section class="build-panel" data-build-panel="plan">
+          <section class="goal-toolbar"><div><span class="kicker">PROJECT PLAN</span><h3>Measurements, Milestones & Notes</h3><p>Keep the physical details and critical deadlines attached to the work.</p></div><div class="button-row"><button id="addMeasurement" class="secondary-btn">Measurement</button><button id="addMilestone" class="secondary-btn">Milestone</button><button id="addProjectNote" class="primary-btn">Note / Link</button></div></section>
+          <div id="projectPlan" class="plan-layout"></div>
+        </section>
+      </section>
+      <section class="view" data-view="knowledge">
+        <section class="page-intro knowledge-intro">
+          <div><span class="kicker">KNOWLEDGE</span><h2>Learn</h2><p>Capture what matters, connect ideas, and turn information into applied wisdom.</p></div>
+          <div class="knowledge-score"><strong id="knowledgeScore">0%</strong><span>Knowledge rhythm</span></div>
+        </section>
+        <div class="mission-tabs knowledge-tabs" role="tablist">
+          <button class="knowledge-tab active" data-knowledge-tab="overview">Overview</button>
+          <button class="knowledge-tab" data-knowledge-tab="library">Library</button>
+          <button class="knowledge-tab" data-knowledge-tab="journal">Journal</button>
+          <button class="knowledge-tab" data-knowledge-tab="books">Books</button>
+          <button class="knowledge-tab" data-knowledge-tab="review">Review</button>
+        </div>
+        <section class="knowledge-panel active" data-knowledge-panel="overview">
+          <section class="knowledge-hero"><div><span class="kicker">APPLY WHAT YOU LEARN</span><h3 id="knowledgeHeadline">Build your knowledge system.</h3><p id="knowledgeGuidance">Capture one useful idea, reflect on it, and decide where it belongs.</p></div><button id="addNote" class="primary-btn">New Capture</button></section>
+          <div id="knowledgeMetrics" class="metric-grid"></div>
+          <div class="dashboard-grid">
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">RECENT</span><h3>Latest Captures</h3></div><button class="text-btn" data-knowledge-jump="library">Open library</button></div><div id="recentKnowledge" class="card-list"></div></section>
+            <section class="section-block flush"><div class="section-head"><div><span class="kicker">READING</span><h3>Current Books</h3></div><button class="text-btn" data-knowledge-jump="books">Open books</button></div><div id="currentBooks" class="card-list"></div></section>
+          </div>
+          <section class="section-block"><div class="section-head"><div><span class="kicker">CONNECTIONS</span><h3>Knowledge Map</h3></div></div><div id="knowledgeMap" class="tag-cloud"></div></section>
+        </section>
+        <section class="knowledge-panel" data-knowledge-panel="library">
+          <section class="goal-toolbar"><div><span class="kicker">SECOND BRAIN</span><h3>Knowledge Library</h3><p>Notes, ideas, lessons, quotes, references, and decisions in one searchable place.</p></div><button id="libraryAdd" class="primary-btn">Add Capture</button></section>
+          <div class="knowledge-controls"><input id="knowledgeSearch" class="search-input" placeholder="Search your library"><div class="filter-row knowledge-filters"><button class="chip active" data-knowledge-filter="all">All</button><button class="chip" data-knowledge-filter="note">Notes</button><button class="chip" data-knowledge-filter="idea">Ideas</button><button class="chip" data-knowledge-filter="lesson">Lessons</button><button class="chip" data-knowledge-filter="quote">Quotes</button><button class="chip" data-knowledge-filter="reference">References</button></div></div>
+          <div id="noteList" class="knowledge-grid"></div>
+        </section>
+        <section class="knowledge-panel" data-knowledge-panel="journal">
+          <section class="goal-toolbar"><div><span class="kicker">REFLECTION</span><h3>Journal</h3><p>Record what happened, what it meant, and what changes next.</p></div><button id="addJournal" class="primary-btn">New Entry</button></section>
+          <div id="journalPrompts" class="prompt-grid"></div><div id="journalList" class="journal-list"></div>
+        </section>
+        <section class="knowledge-panel" data-knowledge-panel="books">
+          <section class="goal-toolbar"><div><span class="kicker">READING</span><h3>Book System</h3><p>Track progress, retain key ideas, and convert reading into action.</p></div><div class="button-row"><button id="logReading" class="secondary-btn">Log Reading</button><button id="addBook" class="primary-btn">Add Book</button></div></section>
+          <div id="readingMetrics" class="metric-grid"></div><div id="bookShelf" class="book-grid"></div><section class="section-block"><div class="section-head"><div><span class="kicker">HISTORY</span><h3>Reading Sessions</h3></div></div><div id="readingHistory" class="card-list"></div></section>
+        </section>
+        <section class="knowledge-panel" data-knowledge-panel="review">
+          <section class="review-hero"><span class="kicker">WEEKLY KNOWLEDGE REVIEW</span><h3>Information only becomes valuable when it changes behavior.</h3><p>Review what you captured, choose what to apply, and remove what no longer matters.</p></section>
+          <div id="knowledgeReviewStats" class="review-grid"></div>
+          <form id="knowledgeReviewForm" class="form-card"><label>Most useful lesson this week<textarea name="lesson" required></textarea></label><label>Where will you apply it?<textarea name="application" required></textarea></label><label>What question remains open?<textarea name="question"></textarea></label><label>One idea to revisit next week<textarea name="revisit"></textarea></label><button class="primary-btn">Save Knowledge Review</button></form>
+          <div id="knowledgeReviewHistory" class="card-list"></div>
+        </section>
+      </section>
+
+      <section class="view" data-view="intelligence">
+        <section class="page-intro intelligence-intro">
+          <div><span class="kicker">INTELLIGENCE</span><h2>Attention Engine</h2><p>Turn your connected systems into a clear, evidence-based next move.</p></div>
+          <div class="intelligence-score"><strong id="intelligenceScore">0%</strong><span>System health</span></div>
+        </section>
+        <section class="intelligence-brief">
+          <div><span class="kicker">DAILY BRIEF</span><h3 id="briefHeadline">Gathering your signals.</h3><p id="briefNarrative">Iron Disciple is comparing mission, execution, body, projects, and knowledge.</p></div>
+          <button id="refreshIntelligence" class="primary-btn">Refresh Brief</button>
+        </section>
+        <div id="systemHealthGrid" class="system-health-grid"></div>
+        <div class="dashboard-grid intelligence-grid">
+          <section class="section-block flush"><div class="section-head"><div><span class="kicker">WHAT DESERVES ATTENTION</span><h3>Priority Queue</h3></div><span id="priorityCount" class="status-pill">0 active</span></div><div id="intelligenceQueue" class="intelligence-queue"></div></section>
+          <section class="section-block flush"><div class="section-head"><div><span class="kicker">CROSS-SYSTEM</span><h3>Connections</h3></div></div><div id="connectionList" class="card-list"></div></section>
+        </div>
+        <section class="section-block"><div class="section-head"><div><span class="kicker">PATTERNS</span><h3>Evidence & Trends</h3></div></div><div id="patternGrid" class="review-grid"></div></section>
+        <section class="section-block"><div class="section-head"><div><span class="kicker">DECISION LOG</span><h3>Completed Recommendations</h3></div><button id="clearIntelHistory" class="text-btn">Clear history</button></div><div id="intelligenceHistory" class="card-list"></div></section>
+      </section>
+      <section class="view" data-view="golf"><section class="page-intro"><span class="kicker">CRAFT</span><h2>Golf</h2><p>Practice deliberately and retain every lesson.</p></section><form id="golfForm" class="form-card"><label>Current focus<input name="focus" placeholder="Neutral takeaway and chest-driven turn"></label><label>Practice notes<textarea name="notes"></textarea></label><label>Handicap<input name="handicap" inputmode="decimal" placeholder="18.6"></label><button class="primary-btn">Save Golf Log</button></form><div id="golfHistory" class="card-list"></div></section>
+      <section class="view" data-view="more"><section class="page-intro"><span class="kicker">SYSTEM</span><h2>More</h2><p>Golf, settings, backup, and system controls.</p></section><div class="menu-list"><button id="installApp" hidden><span>Install Iron Disciple</span><small>Add the app to this device</small></button><button data-nav="intelligence"><span>Intelligence</span><small>Briefing, patterns, and recommendations</small></button><button data-nav="golf"><span>Golf</span><small>Practice, distances, lessons</small></button><button id="exportData"><span>Export Backup</span><small>Download all Iron Disciple data</small></button><button id="importData"><span>Import Backup</span><small>Restore a prior export</small></button><button id="resetData"><span>Reset Data</span><small>Clear this device</small></button></div><section class="form-card"><label>Accent color<select id="accentSelect"><option value="#6ea8fe">Iron Blue</option><option value="#e5b567">Forge Gold</option><option value="#75d69c">Field Green</option><option value="#d87979">Crimson</option></select></label><label class="toggle-row">Compact mode<input id="compactToggle" type="checkbox"></label></section><p class="version">Iron Disciple OS 1.0.0 RC1 — Phase 1</p></section>
+    </main>
+
+    <button id="quickCapture" class="fab" aria-label="Quick capture">+</button>
+    <nav class="bottom-nav" aria-label="Primary">
+      <button class="active" data-nav="today"><span>⌂</span><small>Today</small></button>
+      <button data-nav="mission"><span>◎</span><small>Mission</small></button>
+      <button data-nav="execute"><span>✓</span><small>Execute</small></button>
+      <button data-nav="build"><span>◇</span><small>Build</small></button>
+      <button data-nav="body"><span>△</span><small>Body</small></button>
+      <button data-nav="knowledge"><span>≡</span><small>Learn</small></button>
+      <button data-nav="intelligence"><span>✦</span><small>Intel</small></button>
+      <button data-nav="more"><span>•••</span><small>More</small></button>
+    </nav>
+  </div>
+
+  <dialog id="modal"><form method="dialog" id="modalForm"><div class="modal-head"><h3 id="modalTitle">Quick Capture</h3><button value="cancel" class="icon-btn">×</button></div><div id="modalBody"></div><div class="modal-actions"><button value="cancel" class="secondary-btn">Cancel</button><button id="modalSave" value="default" class="primary-btn">Save</button></div></form></dialog>
+  <dialog id="searchDialog"><form method="dialog"><div class="modal-head"><h3>Search Everything</h3><button value="cancel" class="icon-btn">×</button></div><input id="searchInput" class="search-input" placeholder="Search goals, projects, notes, habits…"><div id="searchResults" class="search-results"></div></form></dialog>
+  <div id="appStatus" class="sr-only" role="status" aria-live="polite"></div>
+  <input id="importFile" type="file" accept="application/json" hidden>
+  <script src="src/core/bootstrap.js"></script>
+  <script src="src/core/constants.js"></script>
+  <script src="src/core/utilities.js"></script>
+  <script src="src/core/integration.js"></script>
+  <script src="src/app.js"></script>
+  <script src="src/phase1-foundation.js"></script>
+  <script src="src/phase1-hardening.js"></script>
+  <script src="src/core/os-foundation.js"></script>
+  <script src="src/core/platform-services.js"></script>
+  <script src="src/core/platform-hardening.js"></script>
+  <script src="src/core/platform-automation.js"></script>
+  <script src="src/core/platform-kernel.js"></script>
+  <script src="src/modules/training-system.js"></script>
+  <script src="src/modules/training-advanced.js"></script>
+  <script src="src/training-phase2.js"></script>
+  <script src="src/training-phase22.js"></script>
+  <script src="src/modules/training-session-pro.js"></script>
+  <script src="src/training-phase23.js"></script>
+  <script src="src/modules/training-coach.js"></script>
+  <script src="src/training-phase24.js"></script>
+  <script src="src/modules/training-periodization.js"></script>
+  <script src="src/training-phase25.js"></script>
+  <script src="src/modules/training-library-pro.js"></script>
+  <script src="src/training-phase26.js"></script>
+</body>
+</html>

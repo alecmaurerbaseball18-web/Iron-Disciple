@@ -1,0 +1,1 @@
+export const GolfModule={name:"golf",initialize(){}};

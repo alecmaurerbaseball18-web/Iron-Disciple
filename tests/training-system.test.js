@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('assert');
+const T=require('../src/modules/training-system.js');
+assert.equal(T.seedExercises().length>=10,true);
+assert.equal(T.estimateOneRepMax(100,10),133.3);
+assert.equal(T.setVolume({weight:100,reps:5}),500);
+const session={durationMinutes:45,exercises:[{exerciseId:'bench',name:'Bench',sets:[{weight:100,reps:10,rpe:8,completed:true},{weight:105,reps:8,rpe:8.5,completed:true}]}]};
+const metrics=T.sessionMetrics(session);assert.equal(metrics.sets,2);assert.equal(metrics.totalReps,18);assert.equal(metrics.totalVolume,1840);
+const records=T.recordsForSession(session,[]);assert.ok(records.some(x=>x.type==='weight'));assert.ok(records.some(x=>x.type==='estimated-1rm'));
+const prior=[{status:'completed',exercises:[{exerciseId:'bench',name:'Bench',sets:[{weight:110,reps:10,rpe:8,completed:true}]}]}];assert.equal(T.recordsForSession(session,prior).some(x=>x.type==='weight'),false);
+assert.equal(T.progressionRecommendation({targetSets:4,completedSets:4,averageRpe:8,technique:8}).action,'increase');
+assert.equal(T.progressionRecommendation({targetSets:4,completedSets:2,averageRpe:9.5,technique:6}).action,'reduce');
+const migrated=T.migrateTrainingState({exerciseLibrary:[{name:'Band Row',category:'Back'}],workouts:[{id:'w1',name:'A',exercises:[{name:'Band Row',sets:3,reps:10}]}]});assert.equal(migrated.training.schemaVersion,1);assert.ok(migrated.workouts[0].exercises[0].exerciseId);
+console.log('training-system tests passed');

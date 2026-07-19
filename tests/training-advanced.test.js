@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');const A=require('../src/modules/training-advanced.js');
+const library=[{id:'band-squat',name:'Band Squat'},{id:'band-row',name:'Band Row'}];
+assert.ok(A.seedTemplates().length>=4);
+const workout=A.buildWorkoutFromTemplate({id:'x',name:'Test',type:'Strength',exercises:[['band-squat',3,'8',90]]},library,'2026-07-19');
+assert.equal(workout.exercises[0].name,'Band Squat');assert.equal(workout.exercises[0].restSeconds,90);
+assert.ok(A.warmupForWorkout(workout,[{id:'band-squat',movement:'Squat'}]).length>=3);
+assert.ok(A.cooldownForWorkout(workout).length>=2);
+assert.deepEqual(A.nextIncompleteSet({exercises:[{sets:[{completed:true},{completed:false}]}]}),{exerciseIndex:0,setIndex:1});
+const groups=A.groupExercises([{id:'a',groupType:'superset',groupId:'g'},{id:'b',groupType:'superset',groupId:'g'},{id:'c'}]);assert.equal(groups.length,2);assert.equal(groups[0].exercises.length,2);
+console.log('training-advanced tests passed');

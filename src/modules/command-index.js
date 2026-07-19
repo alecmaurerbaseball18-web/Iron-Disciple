@@ -1,0 +1,1 @@
+export const CommandModule={name:"command",initialize(){}};
