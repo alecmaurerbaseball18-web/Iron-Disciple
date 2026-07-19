@@ -1234,6 +1234,22 @@ ENVIRONMENT: Object.freeze({
     COMPATIBILITY_LEVEL: 1
 
 }),
+        APPLICATION: Object.freeze({
+
+    NAME: "Iron Disciple OS",
+    SHORT_NAME: "Iron Disciple",
+
+    ORGANIZATION: "Iron Disciple",
+
+    STORAGE_PREFIX: "iron-disciple",
+
+    DEFAULT_TIMEZONE: "America/New_York",
+
+    DEFAULT_LANGUAGE: "en-US",
+
+    COPYRIGHT_YEAR: "2026"
+
+}),
         
 MISSION_PHASE: MISSION_PHASE,
     GOAL_STATUS: GOAL_STATUS,
