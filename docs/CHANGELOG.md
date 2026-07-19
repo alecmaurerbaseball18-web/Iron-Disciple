@@ -9,3 +9,13 @@
 - Added responsive desktop navigation rail.
 - Improved dialog scrolling and backdrop behavior.
 - Updated app/version documentation.
+
+
+## 3.1.0 — Mission Control Decision Layer
+
+- Consolidated Mission Control around the active Today dashboard.
+- Added a next-best-action command brief using Big Three, schedule, tasks, and goals.
+- Added readiness-aware capacity guidance from daily body inputs.
+- Added quarterly and monthly goal-pressure runway.
+- Added current schedule progress and next-block signal.
+- Published Mission Control output into the shared application state and event bus.

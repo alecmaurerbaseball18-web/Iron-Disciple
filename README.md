@@ -1,4 +1,4 @@
-# Iron Disciple OS 1.0.0 RC1 — Session 1
+# Iron Disciple OS 3.1.0 — Mission Control
 
 A mobile-first, offline-capable personal operating system for mission, execution, body, projects, knowledge, golf, and cross-system intelligence.
 
