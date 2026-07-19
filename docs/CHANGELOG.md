@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.1.0 — Human Performance Engine
+- Added unified performance, readiness, and recovery scoring.
+- Added adaptive training decisions and tournament taper guidance.
+- Added daily briefings, cross-domain recommendations, and weekly performance reports.
+- Added browser and Node-compatible public API as `IronPerformance`.
+
+
 ## 1.0.0 RC1 — Session 1
 
 - Stabilized application shell and navigation.
