@@ -12,6 +12,7 @@
         "src/core/bootstrap.js",
         "src/core/constants.js",
         "src/core/utilities.js",
+        "src/core/error-codes.js",
         "src/core/errors.js"
     ].forEach(function load(relativePath) {
         vm.runInThisContext(fs.readFileSync(path.join(root, relativePath), "utf8"), {
@@ -49,7 +50,7 @@
     assert("Typed error inherits from IronLifeError", validation instanceof ErrorTypes.IronLifeError);
     assert("Typed error keeps concrete type", validation instanceof ErrorTypes.ValidationError);
     assert("Typed error has stable name and code", validation.name === "ValidationError" && validation.code === "IRON-1200");
-    assert("Typed error has category and severity defaults", validation.category === "validation" && validation.severity === "warning");
+    assert("Typed error has category and severity defaults", validation.category === "validation" && validation.severity === "warning" && validation.retryable === false);
     assert("Typed error stores module and trace", validation.module === "TestModule" && validation.traceId === "trace-1");
     assert("Typed error has UUID and ISO timestamp", /^[0-9a-f-]{36}$/i.test(validation.id) && !Number.isNaN(Date.parse(validation.timestamp)));
     assert("Typed error metadata is immutable", Object.isFrozen(validation.metadata));
@@ -58,7 +59,7 @@
 
     var json = validation.toJSON();
     assert("toJSON returns immutable object", Object.isFrozen(json));
-    assert("toJSON contains transport fields", json.message === "Invalid value" && json.stack && json.version === "1.0.0");
+    assert("toJSON contains transport fields", json.message === "Invalid value" && json.stack && json.version === "1.1.0");
 
     var retried = validation.withRetryCount(3);
     assert("withRetryCount returns same concrete type", retried instanceof ErrorTypes.ValidationError);
